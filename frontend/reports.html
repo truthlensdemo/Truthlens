@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Investigation Reports & Dossiers — TruthLens Workspace</title>
+  <meta name="description" content="Generate, inspect, and export formal academic investigation dossiers, evidence audits, and signed conclusion reports in TruthLens.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Shell Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Investigation Workspace Stylesheet -->
+  <link rel="stylesheet" href="css/investigation.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Identity Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark">Abinash Panigrahy</div>
+            <div class="tl-micro text-muted text-truncate">Senior Fact-Checker</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0 tl-small">
+                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Case Reports & Dossiers</li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark">Abinash Panigrahy</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Header Row -->
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <h1 class="tl-h1 mb-1">Investigation Reports</h1>
+            <p class="text-secondary tl-small mb-0">
+              Audit-ready case dossiers, source bibliographies, confidence indices, and peer-reviewed final conclusions.
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-tl-primary d-inline-flex align-items-center gap-2" id="btnGenerateNewReport">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Compile New Dossier</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- SEARCH & FILTER TOOLBAR -->
+        <div class="tl-card p-3 mb-4">
+          <div class="row g-2 align-items-center">
+            
+            <!-- Live Search -->
+            <div class="col-12 col-md-5">
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="search" class="form-control border-start-0" id="reportSearchInput" placeholder="Search by dossier title, claim, or report ID..." aria-label="Search reports">
+              </div>
+            </div>
+
+            <!-- Conclusion Verdict Status Filter -->
+            <div class="col-6 col-md-3">
+              <select class="form-select tl-small" id="reportVerdictFilter" aria-label="Filter by verdict">
+                <option value="all" selected>All Conclusion Verdicts</option>
+                <option value="Mostly Unsupported">Mostly Unsupported</option>
+                <option value="Unsupported">Unsupported</option>
+                <option value="Partially Supported">Partially Supported</option>
+                <option value="Mostly Supported">Mostly Supported</option>
+                <option value="Inconclusive">Inconclusive</option>
+              </select>
+            </div>
+
+            <!-- Investigation Status Filter -->
+            <div class="col-6 col-md-2">
+              <select class="form-select tl-small" id="reportStatusFilter" aria-label="Filter by case status">
+                <option value="all" selected>All Case Statuses</option>
+                <option value="Active">Active</option>
+                <option value="Completed">Completed</option>
+                <option value="Draft">Draft</option>
+              </select>
+            </div>
+
+            <!-- Sort By Date -->
+            <div class="col-12 col-md-2">
+              <select class="form-select tl-small" id="reportSortOrder" aria-label="Sort reports">
+                <option value="date-desc" selected>Generated: Newest</option>
+                <option value="date-asc">Generated: Oldest</option>
+                <option value="confidence-desc">Confidence: High to Low</option>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Counter and Reset Strip -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 mt-2 border-top gap-2">
+            <div class="tl-small text-muted">
+              Displaying <span id="reportsDisplayedCount" class="fw-semibold text-dark">0</span> of <span id="reportsTotalCount" class="fw-semibold text-dark">0</span> compiled dossiers
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-decoration-none text-secondary tl-small p-0 d-none" id="resetReportFiltersBtn">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- REPORTS MASTER TABLE CARD -->
+        <div class="tl-card overflow-hidden mb-4" id="reportsTableCard">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 tl-table" id="reportsTable">
+              <thead>
+                <tr>
+                  <th scope="col" style="min-width: 320px;">Investigation Dossier</th>
+                  <th scope="col" style="min-width: 130px;">Compiled Date</th>
+                  <th scope="col" style="min-width: 110px;">Case Status</th>
+                  <th scope="col" style="min-width: 150px;">Confidence Index</th>
+                  <th scope="col" style="min-width: 170px;">Conclusion Verdict</th>
+                  <th scope="col" class="text-end" style="min-width: 130px;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="reportsTableBody">
+                <!-- Dynamically populated via js/investigation.js (or Jinja later) -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- EMPTY STATE -->
+        <div id="noReportsEmptyState" class="tl-card p-5 text-center d-none mb-4">
+          <div class="tl-empty-state-icon mx-auto mb-3">
+            <i class="bi bi-file-earmark-x"></i>
+          </div>
+          <h2 class="tl-h2 mb-2">No Reports Found</h2>
+          <p class="text-secondary tl-small mx-auto mb-3" style="max-width: 440px;">
+            No compiled dossiers matched your query. Complete an active case inquiry to compile an academic summary dossier.
+          </p>
+          <button type="button" class="btn btn-tl-secondary btn-sm" id="emptyResetReportFiltersBtn">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Clear Filter Criteria
+          </button>
+        </div>
+
+      </main>
+
+      <!-- App Shell Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       REPORT PREVIEW MODAL & PRINT DOCUMENT
+       (Designed to match Flask/Jinja context and ReportLab/WeasyPrint pipelines)
+       ========================================================================= -->
+  <div class="modal fade" id="reportPreviewModal" tabindex="-1" aria-labelledby="reportPreviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content border">
+        
+        <!-- Modal Toolbar Header -->
+        <div class="modal-header border-bottom pb-2 d-print-none">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-primary text-white tl-micro">Dossier PDF Preview</span>
+            <span class="text-muted tl-micro" id="previewReportId">#RPT-8429</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="btn btn-sm btn-tl-primary" id="btnPrintPdf">
+              <i class="bi bi-printer me-1"></i> Print / Save as PDF
+            </button>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+        </div>
+
+        <!-- Modal Document Body: Formal Academic Report Document -->
+        <div class="modal-body p-4 p-md-5 tl-report-paper" id="reportPrintArea">
+          
+          <!-- Report Header Banner -->
+          <div class="d-flex justify-content-between align-items-start border-bottom pb-4 mb-4">
+            <div>
+              <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="tl-brand-icon bg-dark text-white">
+                  <i class="bi bi-shield-check"></i>
+                </span>
+                <span class="fw-bold fs-4 text-dark">Truth<span class="text-primary">Lens</span></span>
+                <span class="badge bg-light text-secondary border ms-2">Official Fact Dossier</span>
+              </div>
+              <div class="tl-micro text-muted">
+                Systematic Evidence Management & Verification Infrastructure &bull; Academic Edition
+              </div>
+            </div>
+            <div class="text-end tl-micro text-muted">
+              <div>Dossier ID: <strong class="text-dark" id="repDocId">TL-RPT-8429</strong></div>
+              <div>Published: <strong class="text-dark" id="repDocDate">Sep 11, 2026</strong></div>
+              <div>Investigator: <strong class="text-dark">Abinash Panigrahy</strong></div>
+            </div>
+          </div>
+
+          <!-- Section 1: Investigation Title & Claim -->
+          <div class="mb-4">
+            <div class="d-flex gap-2 align-items-center mb-1">
+              <span class="tl-badge tl-badge-active" id="repDocStatus">Active Inquiry</span>
+              <span class="badge bg-light text-dark border tl-micro" id="repDocCategory">Artificial Intelligence</span>
+            </div>
+            <h1 class="tl-h1 fs-3 text-dark mb-3" id="repDocTitle">Autonomous Agent Labor Replacement for Entry & Senior Software Developers</h1>
+            
+            <div class="tl-claim-box p-3 rounded-2 bg-light border-start-primary">
+              <span class="tl-label text-muted d-block mb-1">Verified Proposition Under Falsification Testing:</span>
+              <div class="fw-bold text-dark fs-6" id="repDocClaim">
+                "Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years."
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 2: Evidentiary Confidence & Methodological Rigor -->
+          <div class="row g-3 mb-4">
+            <div class="col-md-5">
+              <div class="p-3 bg-light rounded border h-100">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="tl-label text-muted">Evidentiary Confidence</span>
+                  <span class="badge bg-success-subtle text-success border border-success-subtle tl-micro fw-semibold">Substantial</span>
+                </div>
+                <div class="h2 fw-bold text-dark mb-1" id="repDocConfidenceScore">82%</div>
+                <div class="progress tl-progress-sm mb-2" style="height: 6px;">
+                  <div class="progress-bar bg-success" id="repDocConfidenceBar" role="progressbar" style="width: 82%;" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="tl-micro text-muted">
+                  Calculated from 14 cross-verified primary records across 6 independent domains.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-7">
+              <div class="p-3 bg-light rounded border h-100">
+                <span class="tl-label text-muted d-block mb-1">Primary Source Balance</span>
+                <div class="d-flex justify-content-between tl-small mb-2">
+                  <span class="text-success"><i class="bi bi-shield-check me-1"></i>Supporting: <strong id="repDocCountSupport">3</strong></span>
+                  <span class="text-danger"><i class="bi bi-shield-x me-1"></i>Against: <strong id="repDocCountAgainst">8</strong></span>
+                  <span class="text-secondary"><i class="bi bi-dash-circle me-1"></i>Neutral: <strong id="repDocCountNeutral">3</strong></span>
+                </div>
+                <div class="tl-spectrum-bar d-flex rounded overflow-hidden mb-2" style="height: 8px;">
+                  <div class="bg-success" style="width: 21.4%;"></div>
+                  <div class="bg-danger" style="width: 57.1%;"></div>
+                  <div class="bg-secondary" style="width: 21.5%;"></div>
+                </div>
+                <div class="tl-micro text-muted">
+                  <strong>Important:</strong> Confidence evaluates documentation completeness and corroboration rigor, NOT an absolute mathematical truth guarantee.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 3: Investigation Summary -->
+          <div class="mb-4">
+            <h2 class="tl-h3 fs-5 text-dark border-bottom pb-2 mb-2">1. Investigation Summary & Scope</h2>
+            <p class="tl-small text-secondary mb-0" id="repDocSummary">
+              This investigation was initiated to evaluate viral claims that autonomous generative code agents would eliminate software developers within 36 months. The investigation isolated the claim against empirical software engineering benchmarks (ACM/IEEE), official macroeconomic workforce datasets (U.S. BLS), and technical architectural constraints.
+            </p>
+          </div>
+
+          <!-- Section 4: Evidence Catalog (Supporting, Against, Neutral) -->
+          <div class="mb-4">
+            <h2 class="tl-h3 fs-5 text-dark border-bottom pb-2 mb-3">2. Ingested Evidence Corpus & Sourcing</h2>
+
+            <!-- Supporting Evidence Table -->
+            <div class="mb-3">
+              <h3 class="tl-h4 fs-6 text-success d-flex align-items-center gap-1 mb-2">
+                <i class="bi bi-shield-check"></i> Supporting Evidence (Corroborating Proposition)
+              </h3>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered tl-small mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 45%;">Source Title</th>
+                      <th style="width: 25%;">Publisher / Domain</th>
+                      <th style="width: 15%;">Format</th>
+                      <th style="width: 15%;">Credibility</th>
+                    </tr>
+                  </thead>
+                  <tbody id="repDocSupportingTbody">
+                    <tr>
+                      <td>Global Tech Summit: CEO Keynote Declaration on Autonomous Engineering</td>
+                      <td>Tech Summit Media Archive</td>
+                      <td>Video Stream</td>
+                      <td><span class="badge bg-warning-subtle text-dark">2/5 (Low)</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Against Evidence Table -->
+            <div class="mb-3">
+              <h3 class="tl-h4 fs-6 text-danger d-flex align-items-center gap-1 mb-2">
+                <i class="bi bi-shield-x"></i> Against Evidence (Refuting / Contradicting Proposition)
+              </h3>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered tl-small mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 45%;">Source Title</th>
+                      <th style="width: 25%;">Publisher / Domain</th>
+                      <th style="width: 15%;">Format</th>
+                      <th style="width: 15%;">Credibility</th>
+                    </tr>
+                  </thead>
+                  <tbody id="repDocAgainstTbody">
+                    <tr>
+                      <td>ACM Empirical Software Engineering: Limits of Autonomous Code Refactoring</td>
+                      <td>Association for Computing Machinery</td>
+                      <td>Research Paper</td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 (Very High)</span></td>
+                    </tr>
+                    <tr>
+                      <td>U.S. Bureau of Labor Statistics: 2024–2034 Occupational Outlook</td>
+                      <td>U.S. Department of Labor (BLS)</td>
+                      <td>Government Report</td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 (Very High)</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Neutral Evidence Table -->
+            <div class="mb-3">
+              <h3 class="tl-h4 fs-6 text-secondary d-flex align-items-center gap-1 mb-2">
+                <i class="bi bi-dash-circle"></i> Neutral Context & Technical Standards
+              </h3>
+              <div class="table-responsive">
+                <table class="table table-sm table-bordered tl-small mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="width: 45%;">Source Title</th>
+                      <th style="width: 25%;">Publisher / Domain</th>
+                      <th style="width: 15%;">Format</th>
+                      <th style="width: 15%;">Credibility</th>
+                    </tr>
+                  </thead>
+                  <tbody id="repDocNeutralTbody">
+                    <tr>
+                      <td>IEEE Standard Definitions for Autonomous System Verification Levels</td>
+                      <td>IEEE Standards Association</td>
+                      <td>Documentation</td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 (Very High)</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 5: Timeline of Verification -->
+          <div class="mb-4">
+            <h2 class="tl-h3 fs-5 text-dark border-bottom pb-2 mb-3">3. Chronological Audit Trail</h2>
+            <div class="tl-report-mini-timeline ps-3 border-start">
+              <div class="mb-2">
+                <span class="tl-micro text-muted">Aug 24, 2026 &bull; 10:00 IST</span>
+                <div class="tl-small fw-semibold text-dark">Investigation Dossier Formulated</div>
+                <div class="tl-micro text-secondary">Target proposition scoped following keynote broadcast.</div>
+              </div>
+              <div class="mb-2">
+                <span class="tl-micro text-muted">Aug 27, 2026 &bull; 09:45 IST</span>
+                <div class="tl-small fw-semibold text-dark">Primary Government Labor Data Attached</div>
+                <div class="tl-micro text-secondary">BLS projections confirming 17% decade growth indexed.</div>
+              </div>
+              <div class="mb-2">
+                <span class="tl-micro text-muted">Sep 05, 2026 &bull; 11:20 IST</span>
+                <div class="tl-small fw-semibold text-dark">Peer-Reviewed ACM Benchmark Classified</div>
+                <div class="tl-micro text-secondary">Counter-evidence confirmed race conditions in 68% of pull requests.</div>
+              </div>
+              <div>
+                <span class="tl-micro text-muted">Sep 10, 2026 &bull; 18:30 IST</span>
+                <div class="tl-small fw-semibold text-dark">Executive Verdict Signed & Locked</div>
+                <div class="tl-micro text-secondary">Lead investigator finalized "Mostly Unsupported" finding.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section 6: Final Conclusion Statement -->
+          <div class="mb-4">
+            <h2 class="tl-h3 fs-5 text-dark border-bottom pb-2 mb-2">4. Final Evaluative Conclusion</h2>
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="tl-label text-muted">Assigned Verdict:</span>
+              <span class="tl-badge tl-badge-against fs-6 px-2 py-1" id="repDocVerdictBadge">Mostly Unsupported</span>
+            </div>
+            <div class="p-3 bg-light rounded border text-dark tl-small" id="repDocConclusionText">
+              The claim that generative AI models will completely eliminate the demand for software engineering positions within three years is Mostly Unsupported by empirical research and contradicted by authoritative economic and employment data. While commercial keynote addresses demonstrated high success on isolated synthetic code snippets, peer-reviewed empirical studies demonstrate autonomous models introduce critical race conditions and architectural regressions when refactoring distributed legacy systems. Long-term employment projections from national labor bodies continue to forecast steady growth for the engineering profession.
+            </div>
+          </div>
+
+          <!-- Section 7: Formal Academic Signature Strip -->
+          <div class="pt-4 border-top text-muted tl-micro">
+            <div class="row">
+              <div class="col-6">
+                <div>TruthLens Cryptographic Hash:</div>
+                <code class="text-dark">SHA256: 7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069</code>
+              </div>
+              <div class="col-6 text-end">
+                <div>Authorized Signatory:</div>
+                <div class="fw-semibold text-dark">Abinash Panigrahy</div>
+                <div>TruthLens Academic Verification Network</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="modal-footer border-top pt-2 d-print-none">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-sm btn-tl-primary" id="btnPrintPdfFooter">
+            <i class="bi bi-printer me-1"></i> Print / Save PDF
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Delete Report Confirmation -->
+  <div class="modal fade" id="deleteReportModal" tabindex="-1" aria-labelledby="deleteReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6 text-danger" id="deleteReportModalLabel">
+            <i class="bi bi-exclamation-octagon me-1"></i>Delete Case Dossier
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-2">
+            Are you sure you want to permanently delete this compiled report?
+          </p>
+          <div class="p-2 bg-light border rounded text-dark tl-small fw-semibold text-truncate mb-2" id="deleteReportTitlePreview">
+            Report Title
+          </div>
+          <p class="tl-micro text-danger mb-0">
+            <i class="bi bi-trash3 me-1"></i> The underlying investigation data will remain intact, but this compiled PDF audit will be removed.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-danger" id="confirmDeleteReportBtn">Delete Report</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session? Unsaved form entries will be lost.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Consolidated Investigation & Report Controller -->
+  <script src="js/investigation.js"></script>
+</body>
+</html>

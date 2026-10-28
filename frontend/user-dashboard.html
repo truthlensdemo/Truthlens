@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Citizen Fact-Checking Portal — TruthLens</title>
+  <meta name="description" content="TruthLens Citizen Portal: Submit rumors, track verification requests, and browse forensic fact-checks.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Specific Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION (Citizen View) -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action: Submit Claim Button -->
+      <div class="px-3 pt-3 pb-2">
+        <button type="button" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2" data-bs-toggle="modal" data-bs-target="#submitClaimModal">
+          <i class="bi bi-send-plus"></i>
+          <span>Submit Rumor / Claim</span>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <div class="tl-sidebar-label px-3 mb-2 text-muted">Citizen Watch</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="user-dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Citizen Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#claimsTrackerSection">
+              <i class="bi bi-hourglass-split"></i>
+              <span>My Submissions</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#verifiedFeedSection">
+              <i class="bi bi-patch-check"></i>
+              <span>Public Dossiers</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Audit Timeline</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2 text-muted">Account & Settings</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>My Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Preferences</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" id="btnLogoutTrigger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Sign Out</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Mini Bio in Sidebar Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm bg-success-subtle text-success border border-success-subtle d-flex align-items-center justify-content-center rounded-circle" id="sidebarUserAvatar" style="width:36px;height:36px;">
+            <span class="fw-bold" style="font-size:0.8rem;">CU</span>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark" id="sidebarUserName">Citizen User</div>
+            <div class="tl-micro text-muted text-truncate" id="sidebarUserRole"><span class="badge bg-success-subtle text-success py-0 px-1">Citizen Contributor</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. MAIN WRAPPER: Topbar + Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- Topbar -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <!-- Left: Hamburger & Breadcrumbs -->
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <div class="d-none d-sm-block">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 tl-small">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">TruthLens</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Citizen Portal</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Center: Search Filter -->
+          <div class="tl-topbar-search d-none d-md-block flex-grow-1 mx-4" style="max-width: 440px;">
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+              <input type="search" class="form-control border-start-0" id="citizenSearchInput" placeholder="Search rumors, fact-checks, or public topics..." aria-label="Search Feed">
+            </div>
+          </div>
+
+          <!-- Right: Status & Profile Actions -->
+          <div class="d-flex align-items-center gap-2">
+            
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light tl-btn-icon position-relative" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View notifications">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-success border border-light rounded-circle">
+                  <span class="visually-hidden">New alerts</span>
+                </span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2 tl-notif-menu" aria-labelledby="notifDropdown">
+                <li class="dropdown-header d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="fw-semibold">Citizen Alerts</span>
+                  <span class="badge bg-success-subtle text-success">Live Status</span>
+                </li>
+                <li>
+                  <a class="dropdown-item py-2 tl-small" href="#claimsTrackerSection">
+                    <div class="fw-semibold text-dark">Track Personal Submissions</div>
+                    <div class="text-muted tl-micro">Verified live by Forensic Analysts</div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs bg-success-subtle text-success rounded-circle d-flex align-items-center justify-content-center" id="topbarUserAvatar" style="width:28px;height:28px;">
+                  <span class="fw-bold" style="font-size:0.7rem;">CU</span>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark" id="topbarUserName">Citizen User</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li class="px-2 py-1">
+                  <div class="fw-semibold text-dark tl-small" id="dropdownUserName">Citizen User</div>
+                  <div class="text-muted tl-micro" id="dropdownUserEmail">user@truthlens.org</div>
+                  <span class="badge bg-success-subtle text-success mt-1 tl-micro" id="dropdownUserRole">Citizen Fact-Checker</span>
+                </li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile Details</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-sliders me-2"></i>Preferences</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" onclick="if(confirm('Sign out of TruthLens?')){TruthLensDB.clearSession(); window.location.href='login.html';} return false;"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Welcome Hero Banner -->
+        <div class="card border-0 bg-primary bg-opacity-10 rounded-4 p-4 mb-4 position-relative overflow-hidden">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white text-primary tl-micro text-uppercase fw-bold mb-2 shadow-sm">
+                <i class="bi bi-shield-check"></i> Citizen Verification Hub
+              </div>
+              <h1 class="tl-h1 text-dark mb-2">Welcome back, <span id="userWelcomeName">Citizen User</span></h1>
+              <p class="text-secondary tl-body mb-3 pe-lg-4">
+                You are registered as a <strong>Community Fact-Checker</strong>. Submit rumors from social media, track forensic triage by senior analysts, and explore verified evidentiary conclusions.
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-tl-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#submitClaimModal">
+                  <i class="bi bi-send-plus-fill"></i> Submit New Rumor for Verification
+                </button>
+                <a href="#verifiedFeedSection" class="btn btn-outline-secondary bg-white d-flex align-items-center gap-2">
+                  <i class="bi bi-journal-check"></i> View Verified Fact-Checks
+                </a>
+              </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-end pe-4">
+              <div class="display-1 text-primary opacity-25">
+                <i class="bi bi-person-check-fill"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">My Submissions</span>
+                  <div class="tl-stat-icon bg-primary-subtle text-primary rounded-circle p-2">
+                    <i class="bi bi-send-check"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statMyClaimsCount">0</div>
+                <div class="tl-micro text-muted">
+                  <span class="text-success fw-semibold" id="statActiveClaimsCount">0 active</span> in review
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Trust & Accuracy</span>
+                  <div class="tl-stat-icon bg-success-subtle text-success rounded-circle p-2">
+                    <i class="bi bi-shield-fill-check"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark">94%</div>
+                <div class="tl-micro text-success fw-semibold">
+                  <i class="bi bi-patch-check-fill"></i> Tier 1 Verified Contributor
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Public Dossiers</span>
+                  <div class="tl-stat-icon bg-info-subtle text-info rounded-circle p-2">
+                    <i class="bi bi-folder-check"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statPublicDossiersCount">3</div>
+                <div class="tl-micro text-muted">Transparent verdicts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Database Sync</span>
+                  <div class="tl-stat-icon bg-warning-subtle text-warning-emphasis rounded-circle p-2">
+                    <i class="bi bi-cloud-check"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark">Real-time</div>
+                <div class="tl-micro text-muted">Firestore / Offline persistence</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- INTERACTIVE ML FAKE NEWS PREDICTOR BENCHMARK -->
+        <section class="card border border-primary-subtle shadow-sm rounded-4 mb-4 bg-white overflow-hidden" id="mlScannerSection">
+          <div class="card-header bg-primary bg-opacity-10 border-bottom border-primary-subtle py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+              <div class="d-inline-flex align-items-center gap-1 badge bg-primary text-white mb-1" style="font-size:0.7rem;">
+                <i class="bi bi-cpu-fill"></i> TruthLens Neural Veracity Engine
+              </div>
+              <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-robot text-primary"></i> Live Machine Learning Fake News Predictor
+              </h2>
+              <p class="text-secondary tl-micro mb-0">Enter any news headline, assertion, or viral rumor. The statistical NLP model predicts fake news likelihood in real time.</p>
+            </div>
+            <span class="badge bg-white text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size:0.75rem;">
+              <i class="bi bi-check-circle-fill text-success"></i> Model Active (v2.0)
+            </span>
+          </div>
+
+          <div class="card-body p-4">
+            <div class="row g-4">
+              <!-- Left Input Column -->
+              <div class="col-lg-7">
+                <div class="mb-3">
+                  <label for="liveMlClaimInput" class="form-label tl-input-label d-flex justify-content-between">
+                    <span>News Headline or Claim to Test</span>
+                    <span class="tl-micro text-muted">Try one of the presets below</span>
+                  </label>
+                  <textarea 
+                    class="form-control" 
+                    id="liveMlClaimInput" 
+                    rows="3" 
+                    placeholder="e.g., Drinking concentrated alkaline water with pH above 9.0 inactivates human viral respiratory infections..."></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label for="liveMlUrlInput" class="form-label tl-input-label">Source URL / Dissemination Vector (Optional)</label>
+                  <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-link-45deg"></i></span>
+                    <input type="url" class="form-control" id="liveMlUrlInput" placeholder="https://example.com/viral-story">
+                  </div>
+                </div>
+
+                <!-- Presets for fast testing -->
+                <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+                  <span class="tl-micro text-muted fw-semibold">Quick Test Presets:</span>
+                  <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro preset-ml-btn" data-claim="Drinking concentrated lemon and baking soda mixture cures seasonal viral influenza in 24 hours." data-url="https://healthforum.example/lemon-cure">
+                    <i class="bi bi-capsule me-1 text-danger"></i>Viral Health Remedy
+                  </button>
+                  <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro preset-ml-btn" data-claim="European Union directives mandate 100% microchip tracking on all domestic pets starting November with €500 fines." data-url="https://tiktok.example/pet-chips">
+                    <i class="bi bi-tag me-1 text-warning"></i>Pet Microchip Rumor
+                  </button>
+                  <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro preset-ml-btn" data-claim="World Health Organization issues clinical guidelines updating evidence for pediatric respiratory pathogens." data-url="https://who.int/news-room/guidelines">
+                    <i class="bi bi-shield-check me-1 text-success"></i>WHO Verified Advisory
+                  </button>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button type="button" class="btn btn-tl-primary d-flex align-items-center gap-2 px-3" id="btnRunLiveMlPredict">
+                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                    <span>Run ML Model Prediction</span>
+                  </button>
+                  <button type="button" class="btn btn-outline-secondary d-flex align-items-center gap-1" id="btnClearLiveMl">
+                    <i class="bi bi-x-circle"></i> Clear
+                  </button>
+                </div>
+              </div>
+
+              <!-- Right ML Prediction Gauge & Results Column -->
+              <div class="col-lg-5">
+                <div class="p-3 bg-light rounded-3 border h-100 d-flex flex-column justify-content-between" id="mlResultBox">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="tl-micro fw-bold text-uppercase text-muted">ML Model Output</span>
+                      <span class="badge bg-secondary-subtle text-secondary" id="mlLiveVerdictBadge">Awaiting Input</span>
+                    </div>
+
+                    <!-- Percentage Gauge Display -->
+                    <div class="text-center py-2 mb-3">
+                      <div class="display-4 fw-bold text-dark lh-1 mb-1" id="mlLivePercentDisplay">--%</div>
+                      <div class="tl-small fw-semibold text-secondary" id="mlLivePercentLabel">Fake News Probability</div>
+                      <div class="progress mt-2" style="height: 10px;">
+                        <div class="progress-bar bg-primary" id="mlLiveProgressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                      </div>
+                    </div>
+
+                    <!-- Component Breakdown Bars -->
+                    <div class="tl-micro vstack gap-2 mb-3">
+                      <div>
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                          <span>Sensationalism & Hyperbole:</span>
+                          <span class="fw-semibold text-dark" id="mlMetricSensational">--%</span>
+                        </div>
+                        <div class="progress" style="height: 4px;">
+                          <div class="progress-bar bg-danger" id="mlBarSensational" style="width: 0%"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                          <span>Linguistic & Emotional Bias:</span>
+                          <span class="fw-semibold text-dark" id="mlMetricBias">--%</span>
+                        </div>
+                        <div class="progress" style="height: 4px;">
+                          <div class="progress-bar bg-warning" id="mlBarBias" style="width: 0%"></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div class="d-flex justify-content-between text-muted mb-1">
+                          <span>Source Credibility Index:</span>
+                          <span class="fw-semibold text-dark" id="mlMetricSource">--%</span>
+                        </div>
+                        <div class="progress" style="height: 4px;">
+                          <div class="progress-bar bg-success" id="mlBarSource" style="width: 0%"></div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Signals List -->
+                    <div class="mb-2">
+                      <span class="tl-micro fw-semibold text-dark d-block mb-1">Detected Feature Signals:</span>
+                      <div class="tl-micro text-secondary p-2 bg-white rounded border" id="mlLiveSignals">
+                        Enter a claim on the left to view linguistic and statistical feature extraction signals.
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Quick Dispatch to Queue -->
+                  <div class="pt-2 border-top mt-2">
+                    <button type="button" class="btn btn-sm btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-1" id="btnDispatchLiveMlToQueue" disabled>
+                      <i class="bi bi-send-plus"></i> Save to Editorial Queue with ML Verdict
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 1: Citizen Claim Tracking Table -->
+        <section class="card border shadow-sm rounded-3 mb-4" id="claimsTrackerSection">
+          <div class="card-header bg-white border-bottom py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+              <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-hourglass-split text-primary"></i> My Verification Requests & ML Scores
+              </h2>
+              <p class="text-secondary tl-micro mb-0">Claims and online rumors you submitted with real-time automated ML model fake news probability.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="btnRefreshClaims" title="Refresh Claims Table">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+              </button>
+              <button type="button" class="btn btn-sm btn-tl-primary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#submitClaimModal">
+                <i class="bi bi-plus-lg"></i> New Claim
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 tl-table">
+                <thead class="table-light tl-table-head">
+                  <tr>
+                    <th scope="col" style="width: 100px;">Tracking ID</th>
+                    <th scope="col">Rumor / Asserted Claim</th>
+                    <th scope="col" style="width: 130px;">Category</th>
+                    <th scope="col" style="width: 160px;">ML Prediction</th>
+                    <th scope="col" style="width: 110px;">Submitted</th>
+                    <th scope="col" style="width: 120px;">Queue Status</th>
+                    <th scope="col" style="width: 80px;" class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="citizenClaimsTableBody">
+                  <!-- Rendered dynamically via TruthLensDB.getSubmittedClaims() -->
+                  <tr>
+                    <td colspan="7" class="text-center py-4 text-muted">
+                      <span class="spinner-border spinner-border-sm me-2"></span> Loading your submitted verification requests...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: Verified Fact-Checks & Public Truth Dossiers -->
+        <section class="mb-4" id="verifiedFeedSection">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-patch-check-fill text-success"></i> Verified Public Inquest Dossiers
+              </h2>
+              <p class="text-secondary tl-micro mb-0">Browse completed forensic investigations with full evidence chains and source attribution.</p>
+            </div>
+            <a href="investigations.html" class="tl-small text-decoration-none text-primary fw-semibold">
+              Explore All Dossiers &rarr;
+            </a>
+          </div>
+
+          <div class="row g-3" id="publicDossiersFeed">
+            <!-- Populated dynamically via TruthLensDB.getInvestigations() -->
+            <div class="col-12 text-center py-4 text-muted">
+              <span class="spinner-border spinner-border-sm me-2"></span> Loading verified investigations...
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: Community Fact-Checking Standards & Ethics -->
+        <section class="card border shadow-sm rounded-3 bg-light-subtle">
+          <div class="card-body p-4">
+            <h3 class="tl-h3 mb-3 d-flex align-items-center gap-2">
+              <i class="bi bi-book-half text-primary"></i> TruthLens Citizen Contributor Standards
+            </h3>
+            <div class="row g-3">
+              <div class="col-md-3">
+                <div class="p-3 bg-white border rounded-3 h-100">
+                  <div class="text-primary fw-bold tl-small mb-1"><i class="bi bi-link-45deg"></i> 1. Link Primary Media</div>
+                  <p class="tl-micro text-secondary mb-0">Always supply the original post URL, archive link, or unedited video timestamp whenever possible.</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-white border rounded-3 h-100">
+                  <div class="text-primary fw-bold tl-small mb-1"><i class="bi bi-quote"></i> 2. Neutral Verbatim</div>
+                  <p class="tl-micro text-secondary mb-0">State the asserted rumor exactly as claimed without editorial spin or inflammatory framing.</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-white border rounded-3 h-100">
+                  <div class="text-primary fw-bold tl-small mb-1"><i class="bi bi-cpu"></i> 3. Synthetic Media Flag</div>
+                  <p class="tl-micro text-secondary mb-0">If a rumor appears generated by AI diffusion or voice cloning, tag it as high-priority synthetic inquiry.</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="p-3 bg-white border rounded-3 h-100">
+                  <div class="text-primary fw-bold tl-small mb-1"><i class="bi bi-fingerprint"></i> 4. Zero Black-Box</div>
+                  <p class="tl-micro text-secondary mb-0">Every verdict published by TruthLens links to peer-reviewed sources and forensic hashes.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: Submit New Claim or Rumor -->
+  <div class="modal fade" id="submitClaimModal" tabindex="-1" aria-labelledby="submitClaimModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border">
+        <form id="submitClaimForm">
+          <div class="modal-header border-bottom">
+            <div class="d-flex align-items-center gap-2">
+              <div class="tl-stat-icon bg-primary-subtle text-primary rounded-circle p-2">
+                <i class="bi bi-send-plus"></i>
+              </div>
+              <div>
+                <h5 class="modal-title tl-h3 mb-0" id="submitClaimModalLabel">Submit Rumor / Claim for Verification</h5>
+                <p class="tl-micro text-muted mb-0">Submissions are reviewed by Chief Editor Puja Mohapatra and assigned to Forensic Analysts.</p>
+              </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+
+          <div class="modal-body p-4">
+            <!-- Claim Headline -->
+            <div class="mb-3">
+              <label for="claimHeadlineInput" class="form-label tl-input-label">Claim Headline / Rumor Asserted <span class="text-danger">*</span></label>
+              <textarea 
+                class="form-control" 
+                id="claimHeadlineInput" 
+                rows="2" 
+                required 
+                placeholder="e.g. Viral video claims drinking boiled garlic water cures pneumonia within 24 hours."></textarea>
+              <div class="tl-micro text-muted mt-1">State the specific factual assertion that needs corroboration or debunking.</div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <!-- Source URL -->
+              <div class="col-md-7">
+                <label for="claimSourceUrlInput" class="form-label tl-input-label">Source URL / Platform Link <span class="text-danger">*</span></label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light text-muted"><i class="bi bi-link"></i></span>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    id="claimSourceUrlInput" 
+                    required 
+                    placeholder="https://twitter.com/... or https://tiktok.com/@...">
+                </div>
+              </div>
+
+              <!-- Category -->
+              <div class="col-md-5">
+                <label for="claimCategorySelect" class="form-label tl-input-label">Topic Category</label>
+                <select class="form-select" id="claimCategorySelect" required>
+                  <option value="Public Policy">Public Policy & Laws</option>
+                  <option value="Health & Medical" selected>Health & Medical</option>
+                  <option value="Science & Space">Science & Space</option>
+                  <option value="Technology & AI">Technology & AI</option>
+                  <option value="Economy & Finance">Economy & Finance</option>
+                  <option value="Elections & Politics">Elections & Politics</option>
+                  <option value="Society & Culture">Society & Culture</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <!-- Priority -->
+              <div class="col-md-6">
+                <label for="claimPrioritySelect" class="form-label tl-input-label">Urgency / Virality Level</label>
+                <select class="form-select" id="claimPrioritySelect">
+                  <option value="Medium" selected>Standard (Emerging claim)</option>
+                  <option value="High">High (Rapidly spreading > 100k views)</option>
+                  <option value="Urgent">Urgent (Potential real-world harm or panic)</option>
+                </select>
+              </div>
+
+              <!-- Estimated Reach -->
+              <div class="col-md-6">
+                <label for="claimReachInput" class="form-label tl-input-label">Where did you find this?</label>
+                <input type="text" class="form-control" id="claimReachInput" placeholder="e.g. TikTok FYP, WhatsApp Group, Reddit r/all">
+              </div>
+            </div>
+
+            <!-- Notes & Context -->
+            <div class="mb-2">
+              <label for="claimNotesInput" class="form-label tl-input-label">Additional Observations & Context</label>
+              <textarea 
+                class="form-control" 
+                id="claimNotesInput" 
+                rows="2" 
+                placeholder="Mention any conflicting remarks, suspicious accounts, or known fact-checks already conducted."></textarea>
+            </div>
+          </div>
+
+          <div class="modal-footer border-top p-3">
+            <button type="button" class="btn btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-tl-primary d-flex align-items-center gap-2" id="btnSubmitClaim">
+              <i class="bi bi-send-fill"></i> Dispatch to Verification Queue
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: View Submitted Claim Details -->
+  <div class="modal fade" id="claimDetailsModal" tabindex="-1" aria-labelledby="claimDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom">
+          <h5 class="modal-title tl-h3" id="claimDetailsModalLabel">Verification Request Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4" id="claimDetailsModalBody">
+          <!-- Rendered dynamically -->
+        </div>
+        <div class="modal-footer border-top p-2">
+          <button type="button" class="btn btn-tl-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/ml-model.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Citizen Portal Controller -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      'use strict';
+
+      // 1. Validate active citizen session
+      let session = TruthLensDB.getCurrentSession();
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      // Fetch fresh profile from Cloud Firestore if available
+      try {
+        const freshUser = await TruthLensDB.getUser(session.id || session.email);
+        if (freshUser) {
+          session = { ...session, ...freshUser };
+          TruthLensDB.setCurrentSession(session);
+        }
+      } catch (_) {}
+
+      // Update user greeting with dynamic name
+      const welcomeNameEl = document.getElementById('userWelcomeName');
+      if (welcomeNameEl) welcomeNameEl.textContent = session.name;
+
+      const tableBody = document.getElementById('citizenClaimsTableBody');
+      const statMyClaims = document.getElementById('statMyClaimsCount');
+      const publicFeed = document.getElementById('publicDossiersFeed');
+      const statPublicDossiers = document.getElementById('statPublicDossiersCount');
+
+      // Status Badge Helper
+      const getStatusBadge = (status) => {
+        switch (status) {
+          case 'Approved':
+          case 'Investigating':
+            return '<span class="badge bg-primary-subtle text-primary border border-primary-subtle"><i class="bi bi-search me-1"></i>Investigating</span>';
+          case 'Completed':
+            return '<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>Completed</span>';
+          case 'Rejected':
+            return '<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-x-circle me-1"></i>Rejected</span>';
+          case 'Under Review':
+          default:
+            return '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-hourglass-split me-1"></i>Under Review</span>';
+        }
+      };
+
+      // ML Fake Probability Badge Helper
+      const getMlBadge = (claim) => {
+        const fakePct = claim.fakeProbability !== undefined 
+          ? claim.fakeProbability 
+          : (claim.mlPrediction ? claim.mlPrediction.fakeProbability : 50);
+
+        let color = 'bg-danger text-white';
+        let icon = 'bi-exclamation-octagon-fill';
+        let label = 'Fake Probability';
+
+        if (fakePct < 40) {
+          color = 'bg-success-subtle text-success border border-success-subtle';
+          icon = 'bi-shield-check';
+          label = 'Likely Authentic';
+        } else if (fakePct < 70) {
+          color = 'bg-warning-subtle text-warning-emphasis border border-warning-subtle';
+          icon = 'bi-exclamation-triangle-fill';
+          label = 'Suspicious';
+        }
+
+        return `
+          <div>
+            <span class="badge ${color} d-inline-flex align-items-center gap-1">
+              <i class="bi ${icon}"></i>
+              <strong>${fakePct}%</strong> Fake
+            </span>
+            <div class="tl-micro text-muted text-truncate mt-1" style="max-width: 140px;" title="${claim.mlVerdict || label}">
+              ${claim.mlVerdict || label}
+            </div>
+          </div>
+        `;
+      };
+
+      // 2. LIVE ML PREDICTION BENCHMARK CONTROLLER
+      const liveMlInput = document.getElementById('liveMlClaimInput');
+      const liveMlUrl = document.getElementById('liveMlUrlInput');
+      const btnRunMl = document.getElementById('btnRunLiveMlPredict');
+      const btnClearMl = document.getElementById('btnClearLiveMl');
+      const btnDispatchLive = document.getElementById('btnDispatchLiveMlToQueue');
+
+      const mlPercentDisplay = document.getElementById('mlLivePercentDisplay');
+      const mlProgressBar = document.getElementById('mlLiveProgressBar');
+      const mlVerdictBadge = document.getElementById('mlLiveVerdictBadge');
+      const mlMetricSensational = document.getElementById('mlMetricSensational');
+      const mlBarSensational = document.getElementById('mlBarSensational');
+      const mlMetricBias = document.getElementById('mlMetricBias');
+      const mlBarBias = document.getElementById('mlBarBias');
+      const mlMetricSource = document.getElementById('mlMetricSource');
+      const mlBarSource = document.getElementById('mlBarSource');
+      const mlLiveSignals = document.getElementById('mlLiveSignals');
+
+      let currentLivePrediction = null;
+
+      const executeLiveMlPrediction = () => {
+        const claimText = liveMlInput.value.trim();
+        const sourceUrl = liveMlUrl.value.trim();
+
+        if (!claimText) {
+          alert('Please enter a claim statement or headline to run the ML model.');
+          return;
+        }
+
+        if (!window.TruthLensML) {
+          console.warn('TruthLens ML Engine not yet initialized');
+          return;
+        }
+
+        const res = window.TruthLensML.predict(claimText, sourceUrl);
+        currentLivePrediction = res;
+
+        // Render Results
+        mlPercentDisplay.textContent = `${res.fakeProbability}%`;
+        mlProgressBar.style.width = `${res.fakeProbability}%`;
+        mlProgressBar.className = `progress-bar ${res.fakeProbability >= 70 ? 'bg-danger' : (res.fakeProbability >= 45 ? 'bg-warning' : 'bg-success')}`;
+
+        mlVerdictBadge.className = `badge ${res.badgeClass}`;
+        mlVerdictBadge.textContent = res.verdict;
+
+        mlMetricSensational.textContent = `${res.metrics.sensationalism}%`;
+        mlBarSensational.style.width = `${res.metrics.sensationalism}%`;
+
+        mlMetricBias.textContent = `${res.metrics.linguisticBias}%`;
+        mlBarBias.style.width = `${res.metrics.linguisticBias}%`;
+
+        mlMetricSource.textContent = `${res.metrics.sourceCredibility}%`;
+        mlBarSource.style.width = `${res.metrics.sourceCredibility}%`;
+
+        if (res.signals && res.signals.length) {
+          mlLiveSignals.innerHTML = `<ul class="mb-0 ps-3">${res.signals.map(s => `<li>${s}</li>`).join('')}</ul>`;
+        } else {
+          mlLiveSignals.textContent = res.explanation;
+        }
+
+        if (btnDispatchLive) btnDispatchLive.disabled = false;
+      };
+
+      if (btnRunMl) btnRunMl.addEventListener('click', executeLiveMlPrediction);
+
+      if (btnClearMl) {
+        btnClearMl.addEventListener('click', () => {
+          liveMlInput.value = '';
+          liveMlUrl.value = '';
+          mlPercentDisplay.textContent = '--%';
+          mlProgressBar.style.width = '0%';
+          mlVerdictBadge.className = 'badge bg-secondary-subtle text-secondary';
+          mlVerdictBadge.textContent = 'Awaiting Input';
+          mlLiveSignals.textContent = 'Enter a claim on the left to view linguistic and statistical feature extraction signals.';
+          if (btnDispatchLive) btnDispatchLive.disabled = true;
+          currentLivePrediction = null;
+        });
+      }
+
+      // Wire quick presets
+      document.querySelectorAll('.preset-ml-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          liveMlInput.value = btn.getAttribute('data-claim');
+          liveMlUrl.value = btn.getAttribute('data-url');
+          executeLiveMlPrediction();
+        });
+      });
+
+      // Quick dispatch to Firestore queue
+      if (btnDispatchLive) {
+        btnDispatchLive.addEventListener('click', async () => {
+          const claimText = liveMlInput.value.trim();
+          const sourceUrl = liveMlUrl.value.trim();
+          if (!claimText) return;
+
+          btnDispatchLive.disabled = true;
+          btnDispatchLive.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Saving to Firestore...';
+
+          try {
+            const newClaim = await TruthLensDB.submitUserClaim({
+              claimText,
+              sourceUrl,
+              category: 'General',
+              priority: currentLivePrediction && currentLivePrediction.fakeProbability >= 70 ? 'High' : 'Medium',
+              notes: `ML Predicted: ${currentLivePrediction ? currentLivePrediction.fakeProbability : 50}% Fake News. Signals: ${(currentLivePrediction ? currentLivePrediction.signals.join('; ') : 'Analyzed by ML')}`,
+              submittedBy: session.email,
+              submittedByName: session.name || 'Citizen User',
+              mlPrediction: currentLivePrediction
+            });
+
+            if (window.showToast) {
+              window.showToast(`Claim #${newClaim.id} saved to Cloud Firestore with ML prediction!`, 'success');
+            }
+            await renderClaimsTable();
+          } catch (err) {
+            alert('Error dispatching claim: ' + err.message);
+          } finally {
+            btnDispatchLive.disabled = false;
+            btnDispatchLive.innerHTML = '<i class="bi bi-send-plus"></i> Save to Editorial Queue with ML Verdict';
+          }
+        });
+      }
+
+      // 3. Render Submitted Claims Table (Scoped to logged-in user)
+      const renderClaimsTable = async () => {
+        try {
+          // Fetch claims specifically submitted by THIS user's email
+          const claims = await TruthLensDB.getSubmittedClaims(session.email);
+          if (statMyClaims) statMyClaims.textContent = claims.length;
+
+          const activeCount = claims.filter(c => c.status === 'Under Review' || c.status === 'Investigating').length;
+          const subtextEl = document.getElementById('statActiveClaimsCount');
+          if (subtextEl) subtextEl.textContent = `${activeCount} active`;
+
+          if (!claims || claims.length === 0) {
+            tableBody.innerHTML = `
+              <tr>
+                <td colspan="7" class="text-center py-5">
+                  <div class="tl-empty-state-icon mx-auto mb-3"><i class="bi bi-journal-text fs-3 text-muted"></i></div>
+                  <h6 class="fw-semibold text-dark">No verification requests submitted yet</h6>
+                  <p class="tl-small text-muted mb-3">Found a suspicious claim or viral post? Test it in the ML Predictor above or submit a claim.</p>
+                  <button type="button" class="btn btn-sm btn-tl-primary" data-bs-toggle="modal" data-bs-target="#submitClaimModal">
+                    <i class="bi bi-send-plus"></i> Submit First Claim
+                  </button>
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          tableBody.innerHTML = claims.map(c => `
+            <tr>
+              <td><span class="badge bg-light text-dark border font-monospace">${c.id}</span></td>
+              <td>
+                <div class="fw-semibold text-dark tl-small line-clamp-2">${c.claimText}</div>
+                <div class="tl-micro text-muted">
+                  <a href="${c.sourceUrl}" target="_blank" rel="noopener" class="text-decoration-none text-primary">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>${c.sourceUrl.length > 35 ? c.sourceUrl.substring(0, 35) + '...' : c.sourceUrl}
+                  </a>
+                </div>
+              </td>
+              <td><span class="badge bg-light text-secondary border">${c.category || 'General'}</span></td>
+              <td>${getMlBadge(c)}</td>
+              <td class="tl-small text-muted">${c.submittedDate || 'Recent'}</td>
+              <td>${getStatusBadge(c.status)}</td>
+              <td class="text-end">
+                <button type="button" class="btn btn-sm btn-light border p-1 px-2 view-claim-btn" data-id="${c.id}" title="View ML Details">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </td>
+            </tr>
+          `).join('');
+
+          // Wire view details buttons
+          document.querySelectorAll('.view-claim-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const claimId = btn.getAttribute('data-id');
+              const found = claims.find(x => x.id === claimId);
+              if (!found) return;
+
+              const fakePct = found.fakeProbability || (found.mlPrediction ? found.mlPrediction.fakeProbability : 50);
+              const modalBody = document.getElementById('claimDetailsModalBody');
+              modalBody.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <span class="badge bg-light text-dark border font-monospace fs-6">${found.id}</span>
+                  ${getStatusBadge(found.status)}
+                </div>
+                <h5 class="tl-h3 text-dark mb-2">${found.claimText}</h5>
+                
+                <!-- ML Model Prediction Box -->
+                <div class="p-3 bg-light rounded-3 mb-3 border">
+                  <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span class="tl-micro fw-bold text-uppercase text-muted"><i class="bi bi-cpu-fill text-primary me-1"></i>ML Model Prediction</span>
+                    <span class="badge ${fakePct >= 70 ? 'bg-danger' : (fakePct >= 45 ? 'bg-warning text-dark' : 'bg-success')}">${fakePct}% Fake News Probability</span>
+                  </div>
+                  <div class="progress mb-2" style="height: 8px;">
+                    <div class="progress-bar ${fakePct >= 70 ? 'bg-danger' : (fakePct >= 45 ? 'bg-warning' : 'bg-success')}" style="width: ${fakePct}%"></div>
+                  </div>
+                  <div class="tl-small text-secondary mb-2">
+                    <strong>Predicted Verdict:</strong> ${found.mlVerdict || (fakePct >= 70 ? 'High Probability Fake News' : 'Authentic / Low Risk')}
+                  </div>
+                  ${found.mlPrediction && found.mlPrediction.signals ? `
+                    <div class="tl-micro text-muted">
+                      <strong>Detected Linguistic Signals:</strong>
+                      <ul class="mb-0 ps-3 mt-1">
+                        ${found.mlPrediction.signals.map(s => `<li>${s}</li>`).join('')}
+                      </ul>
+                    </div>
+                  ` : ''}
+                </div>
+
+                <div class="p-3 bg-light rounded-3 mb-3 tl-small">
+                  <div class="mb-1"><strong>Source Link:</strong> <a href="${found.sourceUrl}" target="_blank" class="text-decoration-none">${found.sourceUrl}</a></div>
+                  <div class="mb-1"><strong>Category:</strong> ${found.category}</div>
+                  <div class="mb-1"><strong>Submitted On:</strong> ${found.submittedDate}</div>
+                  <div><strong>Priority:</strong> ${found.priority || 'Standard'}</div>
+                </div>
+                <div class="tl-small">
+                  <strong>Analyst Context & Notes:</strong>
+                  <p class="text-secondary mt-1 mb-0">${found.notes || 'No extra notes provided.'}</p>
+                </div>
+              `;
+
+              const bsModal = new bootstrap.Modal(document.getElementById('claimDetailsModal'));
+              bsModal.show();
+            });
+          });
+
+        } catch (err) {
+          console.error('[Citizen Portal] Error fetching claims:', err);
+          tableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">Error loading claims: ${err.message}</td></tr>`;
+        }
+      };
+
+      // 4. Render Public Dossiers Feed
+      const renderPublicDossiers = async () => {
+        try {
+          const items = await TruthLensDB.getInvestigations();
+          if (statPublicDossiers) statPublicDossiers.textContent = items.length;
+
+          if (!items || items.length === 0) {
+            publicFeed.innerHTML = `<div class="col-12 text-center text-muted py-4">No verified dossiers published yet.</div>`;
+            return;
+          }
+
+          publicFeed.innerHTML = items.map(inv => {
+            const fakeScore = inv.fakeProbability || (inv.verdict === 'Unsupported' ? 92 : (inv.verdict === 'Mostly Unsupported' ? 82 : 25));
+            let verdictBadge = '';
+            if (fakeScore >= 75) {
+              verdictBadge = `<span class="badge bg-danger-subtle text-danger border border-danger-subtle"><i class="bi bi-x-octagon me-1"></i>${fakeScore}% Fake Probability</span>`;
+            } else if (fakeScore >= 50) {
+              verdictBadge = `<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle"><i class="bi bi-exclamation-triangle me-1"></i>${fakeScore}% Suspicious</span>`;
+            } else {
+              verdictBadge = `<span class="badge bg-success-subtle text-success border border-success-subtle"><i class="bi bi-check-circle me-1"></i>${fakeScore}% Authentic</span>`;
+            }
+
+            return `
+              <div class="col-md-6 col-lg-4">
+                <div class="card border shadow-sm rounded-3 h-100 tl-case-card">
+                  <div class="card-body p-3 d-flex flex-column justify-content-between">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-light text-muted border tl-micro">${inv.category || 'Science'}</span>
+                        ${verdictBadge}
+                      </div>
+                      <h5 class="tl-h3 text-dark mb-2 line-clamp-2">${inv.claim}</h5>
+                      <p class="tl-micro text-secondary mb-3 line-clamp-3">${inv.description || inv.summary || 'Analyzed via ML Veracity Engine and source corroboration.'}</p>
+                    </div>
+                    
+                    <div class="pt-2 border-top">
+                      <div class="d-flex justify-content-between align-items-center tl-micro text-muted mb-2">
+                        <span><i class="bi bi-layers me-1 text-primary"></i>${inv.evidenceCount || 10}+ sources</span>
+                        <span><i class="bi bi-cpu text-primary me-1"></i>ML Confidence: ${inv.confidence || 88}%</span>
+                      </div>
+                      <a href="investigation-details.html?id=${inv.id}" class="btn btn-sm btn-outline-primary w-100 d-flex align-items-center justify-content-center gap-1">
+                        <span>Read Full Forensic Dossier</span>
+                        <i class="bi bi-arrow-right"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join('');
+
+        } catch (err) {
+          console.error('[Citizen Portal] Error loading dossiers:', err);
+          publicFeed.innerHTML = `<div class="col-12 text-center text-danger py-4">Error loading public dossiers: ${err.message}</div>`;
+        }
+      };
+
+      // 5. Form Submission: Submit Claim with automated ML prediction
+      const submitClaimForm = document.getElementById('submitClaimForm');
+      if (submitClaimForm) {
+        submitClaimForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const btn = document.getElementById('btnSubmitClaim');
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Running ML Model & Dispatching...';
+
+          try {
+            const claimText = document.getElementById('claimHeadlineInput').value.trim();
+            const sourceUrl = document.getElementById('claimSourceUrlInput').value.trim();
+            const category = document.getElementById('claimCategorySelect').value;
+            const priority = document.getElementById('claimPrioritySelect').value;
+            const notes = document.getElementById('claimNotesInput').value.trim();
+
+            // Run ML prediction
+            let mlPred = null;
+            if (window.TruthLensML) {
+              mlPred = window.TruthLensML.predict(claimText, sourceUrl);
+            }
+
+            const newClaim = await TruthLensDB.submitUserClaim({
+              claimText,
+              sourceUrl,
+              category,
+              priority,
+              notes,
+              submittedBy: session.email,
+              submittedByName: session.name || 'Community Fact-Checker',
+              mlPrediction: mlPred
+            });
+
+            // Close modal & reset
+            const modalEl = document.getElementById('submitClaimModal');
+            const bsModal = bootstrap.Modal.getInstance(modalEl);
+            if (bsModal) bsModal.hide();
+            submitClaimForm.reset();
+
+            // Notify user
+            if (typeof window.showToast === 'function') {
+              window.showToast(`Claim #${newClaim.id} submitted! ML Model predicted: ${newClaim.fakeProbability}% Fake News.`, 'success');
+            }
+
+            // Re-render
+            await renderClaimsTable();
+
+          } catch (err) {
+            console.error('[Citizen Portal] Submit claim error:', err);
+            alert(`Error submitting claim: ${err.message}`);
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-send-fill"></i> Dispatch to Verification Queue';
+          }
+        });
+      }
+
+      // Refresh button
+      const btnRefresh = document.getElementById('btnRefreshClaims');
+      if (btnRefresh) {
+        btnRefresh.addEventListener('click', async () => {
+          btnRefresh.disabled = true;
+          await renderClaimsTable();
+          btnRefresh.disabled = false;
+        });
+      }
+
+      // Initial Data Load
+      await renderClaimsTable();
+      await renderPublicDossiers();
+    });
+  </script>
+</body>
+</html>

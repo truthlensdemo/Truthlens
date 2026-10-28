@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — TruthLens Investigation Workspace</title>
+  <meta name="description" content="TruthLens analyst dashboard for monitoring active cases, evidentiary confidence, and source distribution.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Specific Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Role Workspaces</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="admin-dashboard.html">
+              <i class="bi bi-shield-shaded text-dark"></i>
+              <span>Admin Console</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="user-dashboard.html">
+              <i class="bi bi-person-heart text-success"></i>
+              <span>Citizen Portal</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" id="btnLogoutTrigger" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Mini Bio in Sidebar Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm" id="sidebarUserAvatar">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark" id="sidebarUserName">Investigator</div>
+            <div class="tl-micro text-muted text-truncate" id="sidebarUserRole">Forensic Analyst</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Dynamic Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <!-- Left: Hamburger Menu & Breadcrumb -->
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <div class="d-none d-sm-block">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 tl-small">
+                  <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Dashboard</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Center: Global Case/Evidence Search -->
+          <div class="tl-topbar-search d-none d-md-block flex-grow-1 mx-4" style="max-width: 440px;">
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+              <input type="search" class="form-control border-start-0" id="globalSearchInput" placeholder="Search claims, sources, evidence hashes, or notes..." aria-label="Search Workspace">
+            </div>
+          </div>
+
+          <!-- Right: Notifications & Profile Dropdown -->
+          <div class="d-flex align-items-center gap-2">
+            
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Quick View Empty/Populated State Toggle (For Review & Testing) -->
+            <button type="button" class="btn btn-sm btn-tl-outline d-none d-xl-inline-flex align-items-center gap-1" id="toggleDemoStateBtn" title="Simulate switching between empty and populated dataset">
+              <i class="bi bi-arrow-repeat"></i>
+              <span id="toggleDemoStateText">Simulate Empty State</span>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light tl-btn-icon position-relative" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View notifications">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                  <span class="visually-hidden">New alerts</span>
+                </span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2 tl-notif-menu" aria-labelledby="notifDropdown">
+                <li class="dropdown-header d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="fw-semibold">Investigation Alerts</span>
+                  <span class="badge bg-primary-subtle text-primary">2 Unread</span>
+                </li>
+                <li>
+                  <a class="dropdown-item py-2 border-bottom tl-small" href="investigation-details.html">
+                    <div class="fw-semibold text-dark">New contradiction detected</div>
+                    <div class="text-muted tl-micro">Case #TL-8429 &bull; 15 mins ago</div>
+                  </a>
+                </li>
+                <li>
+                  <a class="dropdown-item py-2 tl-small" href="evidence.html">
+                    <div class="fw-semibold text-dark">Source verified by peer</div>
+                    <div class="text-muted tl-micro">WHO Guideline Advisory &bull; 2 hours ago</div>
+                  </a>
+                </li>
+                <li class="pt-2 text-center">
+                  <a href="timeline.html" class="tl-small text-decoration-none text-primary fw-medium">View full activity audit</a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- User Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs" id="topbarUserAvatar">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark" id="topbarUserName">Investigator</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li class="px-2 py-1">
+                  <div class="fw-semibold text-dark tl-small" id="dropdownUserName">Investigator</div>
+                  <div class="text-muted tl-micro" id="dropdownUserEmail">investigator@truthlens.org</div>
+                </li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile Details</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-sliders me-2"></i>Workspace Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Welcome Banner & Quick Action Buttons -->
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <h1 class="tl-h1 mb-1">Welcome back, <span id="dashboardWelcomeName">Investigator</span></h1>
+            <p class="text-secondary tl-small mb-0">
+              Here is the analytical overview of your active fact-checking cases and ingested evidence.
+            </p>
+          </div>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="create-investigation.html" class="btn btn-tl-primary d-inline-flex align-items-center gap-2">
+              <i class="bi bi-plus-circle"></i>
+              <span>New Investigation</span>
+            </a>
+            <a href="add-evidence.html" class="btn btn-tl-secondary d-inline-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-arrow-up"></i>
+              <span>Add Evidence</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- ===================================================================
+             DATA-FILLED VIEW (Active state replaced by Flask data later)
+             =================================================================== -->
+        <div id="dashboardDataContainer">
+          
+          <!-- STATISTICS COUNTERS ROW -->
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6 col-xl-3">
+              <div class="tl-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="tl-label text-muted d-block mb-1">Total Investigations</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark" id="statTotalInquests">3</h2>
+                  </div>
+                  <div class="tl-icon-box bg-primary-subtle text-primary">
+                    <i class="bi bi-folder-fill"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-1 mt-3 tl-small text-success">
+                  <i class="bi bi-arrow-up-short"></i>
+                  <span class="fw-semibold">Active cases</span>
+                  <span class="text-muted ms-1">in forensic database</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="tl-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="tl-label text-muted d-block mb-1">Active Investigations</span>
+                    <h2 class="display-6 fw-bold mb-0 text-primary" id="statActiveInquests">2</h2>
+                  </div>
+                  <div class="tl-icon-box bg-info-subtle text-info">
+                    <i class="bi bi-hourglass-split"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-1 mt-3 tl-small text-secondary">
+                  <i class="bi bi-activity"></i>
+                  <span class="fw-semibold">In Progress</span>
+                  <span class="text-muted ms-1">cross-referencing sources</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="tl-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="tl-label text-muted d-block mb-1">Completed Dossiers</span>
+                    <h2 class="display-6 fw-bold mb-0 text-success" id="statCompletedInquests">1</h2>
+                  </div>
+                  <div class="tl-icon-box bg-success-subtle text-success">
+                    <i class="bi bi-check2-circle"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-1 mt-3 tl-small text-muted">
+                  <i class="bi bi-archive"></i>
+                  <span>100% peer audit-ready</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-6 col-xl-3">
+              <div class="tl-card p-3 h-100">
+                <div class="d-flex justify-content-between align-items-start">
+                  <div>
+                    <span class="tl-label text-muted d-block mb-1">Total Evidence Records</span>
+                    <h2 class="display-6 fw-bold mb-0 text-dark" id="statTotalEvidence">5</h2>
+                  </div>
+                  <div class="tl-icon-box bg-secondary-subtle text-secondary">
+                    <i class="bi bi-layers-fill"></i>
+                  </div>
+                </div>
+                <div class="d-flex align-items-center gap-1 mt-3 tl-small text-muted">
+                  <i class="bi bi-link-45deg"></i>
+                  <span>Across 48 primary domains</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE ML FORENSICS PREDICTION BENCHMARK -->
+          <div class="card border border-primary-subtle shadow-sm rounded-4 mb-4 bg-white overflow-hidden" id="labMlPredictorCard">
+            <div class="card-header bg-primary bg-opacity-10 border-bottom border-primary-subtle py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+              <div>
+                <span class="badge bg-primary text-white mb-1"><i class="bi bi-cpu-fill me-1"></i>Automated ML Forensics Engine</span>
+                <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                  <i class="bi bi-robot text-primary"></i> Machine Learning Fake News Predictor & Classifier
+                </h2>
+                <p class="text-secondary tl-micro mb-0">Evaluate assertions, article claims, or viral text with NLP linguistic feature extraction and automated probability scoring.</p>
+              </div>
+              <span class="badge bg-white text-primary border border-primary-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size:0.75rem;">
+                <span class="status-dot bg-success rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> ML Engine Ready
+              </span>
+            </div>
+
+            <div class="card-body p-4">
+              <div class="row g-4">
+                <!-- Left Input Form -->
+                <div class="col-lg-7">
+                  <div class="mb-3">
+                    <label for="labClaimInput" class="form-label tl-input-label d-flex justify-content-between">
+                      <span>Assertion / Article Headline to Classify</span>
+                      <span class="tl-micro text-muted">Enter text or pick a test preset</span>
+                    </label>
+                    <textarea 
+                      class="form-control" 
+                      id="labClaimInput" 
+                      rows="3" 
+                      placeholder="e.g., Leaked central banking documents schedule immediate $200 weekly caps on domestic retail ATM withdrawals..."></textarea>
+                  </div>
+
+                  <div class="row g-3 mb-3">
+                    <div class="col-md-7">
+                      <label for="labUrlInput" class="form-label tl-input-label">Source URL / Domain</label>
+                      <input type="url" class="form-control" id="labUrlInput" placeholder="https://news-source.example/article">
+                    </div>
+                    <div class="col-md-5">
+                      <label for="labCategorySelect" class="form-label tl-input-label">Domain Category</label>
+                      <select class="form-select" id="labCategorySelect">
+                        <option value="Artificial Intelligence" selected>Artificial Intelligence</option>
+                        <option value="Public Health">Public Health</option>
+                        <option value="Economic Policy">Economic Policy</option>
+                        <option value="Electoral Integrity">Electoral Integrity</option>
+                        <option value="Climate Science">Climate Science</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="d-flex flex-wrap gap-2 mb-3">
+                    <span class="tl-micro text-muted fw-semibold">Quick Presets:</span>
+                    <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro lab-preset-btn" data-claim="Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years." data-url="https://tech-leak.example/ai-replacement" data-cat="Artificial Intelligence">
+                      <i class="bi bi-laptop me-1 text-primary"></i>AI Dev Replacement
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro lab-preset-btn" data-claim="Drinking concentrated alkaline water with pH above 9.0 inactivates human viral respiratory infections." data-url="https://wellness-myth.example/alkaline" data-cat="Public Health">
+                      <i class="bi bi-capsule me-1 text-danger"></i>Alkaline Cure
+                    </button>
+                    <button type="button" class="btn btn-sm btn-light border py-0 px-2 tl-micro lab-preset-btn" data-claim="Central Bank emergency memoranda schedule immediate $200 weekly domestic retail ATM withdrawal limits." data-url="https://telegram-leaks.example/atm-cap" data-cat="Economic Policy">
+                      <i class="bi bi-bank me-1 text-warning"></i>ATM Withdrawal Cap
+                    </button>
+                  </div>
+
+                  <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-tl-primary d-flex align-items-center gap-2 px-3" id="btnRunLabPredict">
+                      <i class="bi bi-lightning-charge-fill text-warning"></i>
+                      <span>Run ML Model Prediction</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary" id="btnClearLabPredict">
+                      <i class="bi bi-x-circle"></i> Reset
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Right Prediction Output Panel -->
+                <div class="col-lg-5">
+                  <div class="p-3 bg-light rounded-3 border h-100 d-flex flex-column justify-content-between" id="labMlResultPanel">
+                    <div>
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="tl-micro fw-bold text-uppercase text-muted">Automated Veracity Assessment</span>
+                        <span class="badge bg-secondary-subtle text-secondary" id="labMlVerdictBadge">Awaiting Input</span>
+                      </div>
+
+                      <div class="text-center py-2 mb-3">
+                        <div class="display-4 fw-bold text-dark lh-1 mb-1" id="labMlPercentDisplay">--%</div>
+                        <div class="tl-small fw-semibold text-secondary" id="labMlPercentLabel">Fake News Probability</div>
+                        <div class="progress mt-2" style="height: 10px;">
+                          <div class="progress-bar bg-primary" id="labMlProgressBar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                      </div>
+
+                      <div class="tl-micro vstack gap-2 mb-3">
+                        <div>
+                          <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>Sensationalism & Hyperbole:</span>
+                            <span class="fw-semibold text-dark" id="labMetricSensational">--%</span>
+                          </div>
+                          <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-danger" id="labBarSensational" style="width: 0%"></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>Linguistic Bias Score:</span>
+                            <span class="fw-semibold text-dark" id="labMetricBias">--%</span>
+                          </div>
+                          <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-warning" id="labBarBias" style="width: 0%"></div>
+                          </div>
+                        </div>
+                        <div>
+                          <div class="d-flex justify-content-between text-muted mb-1">
+                            <span>Source Credibility Index:</span>
+                            <span class="fw-semibold text-dark" id="labMetricSource">--%</span>
+                          </div>
+                          <div class="progress" style="height: 4px;">
+                            <div class="progress-bar bg-success" id="labBarSource" style="width: 0%"></div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div>
+                        <span class="tl-micro fw-semibold text-dark d-block mb-1">ML Signal Analysis:</span>
+                        <div class="tl-micro text-secondary p-2 bg-white rounded border" id="labMlSignalsText">
+                          Run the model on the left to inspect extracted linguistic patterns and probability weighting.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="pt-2 border-top mt-3">
+                      <button type="button" class="btn btn-sm btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-1" id="btnSaveLabAsCase" disabled>
+                        <i class="bi bi-folder-plus"></i> Save as Investigation Dossier in Firestore
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ANALYTICS CHARTS ROW -->
+          <div class="row g-3 mb-4">
+            
+            <!-- Chart 1: Investigation Status Overview -->
+            <div class="col-lg-6">
+              <div class="tl-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h3 class="tl-h3 mb-1">Investigation Case Status</h3>
+                    <p class="tl-small text-muted mb-0">Breakdown of all registered workspace dossiers</p>
+                  </div>
+                  <span class="badge bg-light text-secondary border">Real-Time</span>
+                </div>
+                <div class="tl-chart-container" style="position: relative; height: 260px;">
+                  <canvas id="investigationStatusChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+            <!-- Chart 2: Evidence Classification Breakdown -->
+            <div class="col-lg-6">
+              <div class="tl-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h3 class="tl-h3 mb-1">Evidence Classification</h3>
+                    <p class="tl-small text-muted mb-0">Distribution across the 4 TruthLens evidentiary pillars</p>
+                  </div>
+                  <span class="badge bg-light text-secondary border">142 Ingested Sources</span>
+                </div>
+                <div class="tl-chart-container" style="position: relative; height: 260px;">
+                  <canvas id="evidenceClassificationChart"></canvas>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- RECENT INVESTIGATIONS & EVIDENCE SPLIT ROW -->
+          <div class="row g-3 mb-4">
+            
+            <!-- Left Side (8 Cols): Recent Investigations Table -->
+            <div class="col-xl-8">
+              <div class="tl-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h3 class="tl-h3 mb-1">Recent Investigations</h3>
+                    <p class="tl-small text-muted mb-0">Active and recently updated claims under analysis</p>
+                  </div>
+                  <a href="investigations.html" class="btn btn-sm btn-tl-outline">View All (28)</a>
+                </div>
+
+                <div class="table-responsive">
+                  <table class="table table-hover align-middle mb-0 tl-table">
+                    <thead>
+                      <tr>
+                        <th scope="col" style="width: 35%;">Target Claim</th>
+                        <th scope="col" style="width: 15%;">ML Prediction</th>
+                        <th scope="col" style="width: 12%;">Status</th>
+                        <th scope="col" style="width: 14%;">Evidence</th>
+                        <th scope="col" style="width: 14%;">Confidence</th>
+                        <th scope="col" class="text-end" style="width: 10%;">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody id="recentInvestigationsTableBody">
+                      <!-- Demo Case 1 -->
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 320px;">
+                            "AI will replace all software engineers by 2027."
+                          </div>
+                          <div class="tl-micro text-muted">ID: #TL-8429 &bull; Tech & Society</div>
+                        </td>
+                        <td>
+                          <span class="tl-badge tl-badge-active">Active</span>
+                        </td>
+                        <td>
+                          <span class="tl-small fw-medium">14 Sources</span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1 tl-progress-sm" style="height: 6px;">
+                              <div class="progress-bar bg-success" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="tl-micro fw-semibold">82%</span>
+                          </div>
+                        </td>
+                        <td class="text-end">
+                          <a href="investigation-details.html" class="btn btn-sm btn-light border py-1 px-2" title="Inspect Case">
+                            <i class="bi bi-arrow-right"></i>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <!-- Demo Case 2 -->
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 320px;">
+                            "Alkaline drinking water completely neutralizes respiratory virus replication."
+                          </div>
+                          <div class="tl-micro text-muted">ID: #TL-8411 &bull; Public Health</div>
+                        </td>
+                        <td>
+                          <span class="tl-badge tl-badge-completed">Completed</span>
+                        </td>
+                        <td>
+                          <span class="tl-small fw-medium">21 Sources</span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1 tl-progress-sm" style="height: 6px;">
+                              <div class="progress-bar bg-danger" role="progressbar" style="width: 95%" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="tl-micro fw-semibold">95%</span>
+                          </div>
+                        </td>
+                        <td class="text-end">
+                          <a href="investigation-details.html" class="btn btn-sm btn-light border py-1 px-2" title="Inspect Case">
+                            <i class="bi bi-arrow-right"></i>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <!-- Demo Case 3 -->
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 320px;">
+                            "Major coastal metro area will submerge entirely before end of fiscal year."
+                          </div>
+                          <div class="tl-micro text-muted">ID: #TL-8390 &bull; Climate / Environment</div>
+                        </td>
+                        <td>
+                          <span class="tl-badge tl-badge-active">Active</span>
+                        </td>
+                        <td>
+                          <span class="tl-small fw-medium">8 Sources</span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1 tl-progress-sm" style="height: 6px;">
+                              <div class="progress-bar bg-warning" role="progressbar" style="width: 45%" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="tl-micro fw-semibold">45%</span>
+                          </div>
+                        </td>
+                        <td class="text-end">
+                          <a href="investigation-details.html" class="btn btn-sm btn-light border py-1 px-2" title="Inspect Case">
+                            <i class="bi bi-arrow-right"></i>
+                          </a>
+                        </td>
+                      </tr>
+
+                      <!-- Demo Case 4 -->
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark text-truncate" style="max-width: 320px;">
+                            "Central Bank planning emergency nationwide withdrawal limitations."
+                          </div>
+                          <div class="tl-micro text-muted">ID: #TL-8365 &bull; Financial Policy</div>
+                        </td>
+                        <td>
+                          <span class="tl-badge tl-badge-draft">Draft</span>
+                        </td>
+                        <td>
+                          <span class="tl-small fw-medium">3 Sources</span>
+                        </td>
+                        <td>
+                          <div class="d-flex align-items-center gap-2">
+                            <div class="progress flex-grow-1 tl-progress-sm" style="height: 6px;">
+                              <div class="progress-bar bg-secondary" role="progressbar" style="width: 20%" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <span class="tl-micro fw-semibold">20%</span>
+                          </div>
+                        </td>
+                        <td class="text-end">
+                          <a href="investigation-details.html" class="btn btn-sm btn-light border py-1 px-2" title="Inspect Case">
+                            <i class="bi bi-arrow-right"></i>
+                          </a>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side (4 Cols): Recent Evidence Feed -->
+            <div class="col-xl-4">
+              <div class="tl-card p-3 p-md-4 h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h3 class="tl-h3 mb-1">Recent Evidence</h3>
+                    <p class="tl-small text-muted mb-0">Latest ingested records & citations</p>
+                  </div>
+                  <a href="evidence.html" class="btn btn-sm btn-tl-outline">Vault</a>
+                </div>
+
+                <div class="vstack gap-3" id="recentEvidenceContainer">
+                  
+                  <!-- Evidence Item 1 -->
+                  <div class="p-3 bg-light rounded-2 border tl-evidence-widget-card">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <span class="tl-badge tl-badge-against">
+                        <i class="bi bi-shield-x me-1"></i> Against
+                      </span>
+                      <span class="tl-micro text-muted">25 mins ago</span>
+                    </div>
+                    <div class="fw-semibold text-dark tl-small mb-1 text-truncate">
+                      ACM Transactions on Software Engineering Empirical Study
+                    </div>
+                    <p class="tl-micro text-secondary mb-2">
+                      Source: dl.acm.org &bull; Peer-Reviewed &bull; High Credibility
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="tl-micro text-muted">Case #TL-8429</span>
+                      <a href="evidence.html" class="tl-small text-primary text-decoration-none fw-medium">Inspect Record</a>
+                    </div>
+                  </div>
+
+                  <!-- Evidence Item 2 -->
+                  <div class="p-3 bg-light rounded-2 border tl-evidence-widget-card">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <span class="tl-badge tl-badge-support">
+                        <i class="bi bi-shield-check me-1"></i> Supporting
+                      </span>
+                      <span class="tl-micro text-muted">1 hour ago</span>
+                    </div>
+                    <div class="fw-semibold text-dark tl-small mb-1 text-truncate">
+                      Tech CEO Keynote Address Transcript (Archived Stream)
+                    </div>
+                    <p class="tl-micro text-secondary mb-2">
+                      Source: youtube.com/archive &bull; Primary Speech
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="tl-micro text-muted">Case #TL-8429</span>
+                      <a href="evidence.html" class="tl-small text-primary text-decoration-none fw-medium">Inspect Record</a>
+                    </div>
+                  </div>
+
+                  <!-- Evidence Item 3 -->
+                  <div class="p-3 bg-light rounded-2 border tl-evidence-widget-card">
+                    <div class="d-flex justify-content-between align-items-start mb-1">
+                      <span class="tl-badge tl-badge-verify">
+                        <i class="bi bi-question-circle me-1"></i> Needs Verification
+                      </span>
+                      <span class="tl-micro text-muted">3 hours ago</span>
+                    </div>
+                    <div class="fw-semibold text-dark tl-small mb-1 text-truncate">
+                      Anonymous Telegram Channel Internal Leaked Memo PDF
+                    </div>
+                    <p class="tl-micro text-secondary mb-2">
+                      Source: t.me/leaks &bull; Chain of Custody Pending
+                    </p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="tl-micro text-muted">Case #TL-8365</span>
+                      <a href="evidence.html" class="tl-small text-primary text-decoration-none fw-medium">Inspect Record</a>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ===================================================================
+             EMPTY STATE (Toggled dynamically or served by Flask when 0 records)
+             =================================================================== -->
+        <div id="dashboardEmptyState" class="tl-card p-5 text-center d-none">
+          <div class="tl-empty-state-icon mx-auto mb-3">
+            <i class="bi bi-folder-x"></i>
+          </div>
+          <h2 class="tl-h2 mb-2">No Active Investigation Cases</h2>
+          <p class="text-secondary tl-small mx-auto mb-4" style="max-width: 480px;">
+            Your workspace is clean. Formulate your first target claim to begin gathering primary sources, logging contradictions, and evaluating source credibility.
+          </p>
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="create-investigation.html" class="btn btn-tl-primary">
+              <i class="bi bi-plus-circle me-1"></i> Create First Investigation
+            </a>
+            <a href="index.html#how-it-works" class="btn btn-tl-secondary">
+              <i class="bi bi-book me-1"></i> View Investigation Methodology
+            </a>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- App Shell Mini Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Reusable Modal: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session? Unsaved form entries will be lost.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/ml-model.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Chart.js 4.4.4 UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+  <!-- TruthLens Core App Script -->
+  <script src="js/main.js"></script>
+
+  <!-- Dashboard View Controller Script -->
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

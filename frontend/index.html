@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TruthLens — Fake News Investigation & Evidence Management System</title>
+  <meta name="description" content="TruthLens is an evidence-first investigation workspace for fact-checkers, researchers, and journalists to systematically evaluate claims, source credibility, and contradictions.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- TruthLens Core Design System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="tl-body-bg">
+
+  <!-- 1. NAVBAR -->
+  <nav class="navbar navbar-expand-lg tl-navbar sticky-top" id="mainNav" aria-label="Main navigation">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
+        <span class="tl-brand-icon">
+          <i class="bi bi-shield-check"></i>
+        </span>
+        <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+      </a>
+
+      <button class="navbar-toggler tl-navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navContent" aria-controls="navContent" aria-expanded="false" aria-label="Toggle navigation">
+        <i class="bi bi-list"></i>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navContent">
+        <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link" href="#overview">Overview</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#how-it-works">Methodology</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#features">Capabilities</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#classification">Evidence Model</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#workflow">Workflow</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#difference">Why TruthLens</a>
+          </li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-2">
+                    <!-- Theme Toggle Quick Action in Navbar -->
+          <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+            <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+          </button>
+          <a href="login.html" class="btn btn-tl-outline">Log In</a>
+          <a href="register.html" class="btn btn-tl-primary">Launch Workspace</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 2. HERO SECTION -->
+  <header class="tl-hero-section py-5 py-lg-6 position-relative border-bottom">
+    <div class="container position-relative">
+      <div class="row align-items-center gy-5">
+        <div class="col-lg-7">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill tl-pill-meta mb-3">
+            <i class="bi bi-search text-primary"></i>
+            <span>Structured Verification & Dossier Workspace</span>
+          </div>
+          <h1 class="tl-hero-title mb-3">
+            TruthLens does not simply tell you what to believe. <span class="tl-hero-title-accent">It helps you investigate why.</span>
+          </h1>
+          <p class="tl-hero-subtitle text-secondary mb-4">
+            A methodical case management workspace built for journalists, fact-checkers, students, and researchers. Create verifiable dossiers around questionable assertions, catalog primary sources, detect narrative contradictions, and derive reproducible conclusions.
+          </p>
+          <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+            <a href="create-investigation.html" class="btn btn-tl-primary btn-lg">
+              <i class="bi bi-folder-plus me-2"></i>Start New Case
+            </a>
+            <a href="dashboard.html" class="btn btn-tl-secondary btn-lg">
+              <i class="bi bi-grid-1x2 me-2"></i>Live Dashboard Demo
+            </a>
+          </div>
+          <div class="row pt-3 border-top g-3 text-secondary tl-small">
+            <div class="col-auto d-flex align-items-center gap-2">
+              <i class="bi bi-shield-lock-fill text-success"></i>
+              <span>No AI Hallucinations</span>
+            </div>
+            <div class="col-auto d-flex align-items-center gap-2">
+              <i class="bi bi-diagram-3-fill text-primary"></i>
+              <span>Structured Evidence Graphs</span>
+            </div>
+            <div class="col-auto d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-check-fill text-info"></i>
+              <span>Exportable Case Reports</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Interactive Visual Demonstration Card -->
+        <div class="col-lg-5">
+          <div class="tl-card tl-hero-preview-card p-3 p-md-4 shadow-sm">
+            <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom">
+              <div class="d-flex align-items-center gap-2">
+                <span class="tl-badge tl-badge-active">Active Case</span>
+                <span class="text-muted tl-small">ID: #TL-8429</span>
+              </div>
+              <span class="tl-badge tl-badge-high">High Priority</span>
+            </div>
+
+            <div class="mb-3">
+              <label class="tl-label text-muted d-block mb-1">Target Claim Under Scrutiny</label>
+              <div class="tl-claim-box p-3 rounded-2">
+                <i class="bi bi-quote fs-4 text-muted align-top me-1"></i>
+                <span class="fw-semibold text-dark">"Artificial Intelligence will fully replace all software engineering jobs within three years."</span>
+              </div>
+            </div>
+
+            <!-- Evidence Breakdown Bars -->
+            <div class="mb-3">
+              <div class="d-flex justify-content-between tl-small mb-1">
+                <span class="text-secondary fw-medium">Evidence Spectrum</span>
+                <span class="text-muted">14 Verified Sources</span>
+              </div>
+              <div class="tl-spectrum-bar d-flex rounded overflow-hidden">
+                <div class="tl-spectrum-chunk bg-success" style="width: 20%;" data-bs-toggle="tooltip" title="3 Supporting Sources"></div>
+                <div class="tl-spectrum-chunk bg-danger" style="width: 55%;" data-bs-toggle="tooltip" title="8 Counter Sources"></div>
+                <div class="tl-spectrum-chunk bg-secondary" style="width: 15%;" data-bs-toggle="tooltip" title="2 Neutral Sources"></div>
+                <div class="tl-spectrum-chunk bg-warning" style="width: 10%;" data-bs-toggle="tooltip" title="1 Pending Verification"></div>
+              </div>
+              <div class="d-flex justify-content-between text-muted tl-small mt-1">
+                <span><i class="bi bi-square-fill text-success tl-micro-dot"></i> 21% Support</span>
+                <span><i class="bi bi-square-fill text-danger tl-micro-dot"></i> 57% Against</span>
+                <span><i class="bi bi-square-fill text-secondary tl-micro-dot"></i> 14% Neutral</span>
+                <span><i class="bi bi-square-fill text-warning tl-micro-dot"></i> 7% Verify</span>
+              </div>
+            </div>
+
+            <!-- Evidentiary Confidence Meter -->
+            <div class="p-3 bg-light rounded-2 border mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <span class="tl-label text-muted">Evidentiary Rigor</span>
+                <span class="tl-badge tl-badge-support">Substantial Documentation (82%)</span>
+              </div>
+              <div class="progress tl-progress-sm">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <p class="tl-small text-muted mb-0 mt-2">
+                <i class="bi bi-info-circle me-1"></i> Corroborated through 4 peer-reviewed computer science publications and 4 industry workforce studies.
+              </p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center pt-2">
+              <span class="tl-small text-muted"><i class="bi bi-clock-history me-1"></i> Updated 2 hours ago</span>
+              <a href="investigation-details.html" class="btn btn-sm btn-tl-outline">Inspect Case Details</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2.5 LIVE MACHINE LEARNING PREDICTOR SHOWCASE -->
+  <section class="py-5 bg-light border-bottom" id="ml-scanner">
+    <div class="container">
+      <div class="row justify-content-center text-center mb-4">
+        <div class="col-lg-8">
+          <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-primary-subtle text-primary fw-semibold tl-small mb-2">
+            <i class="bi bi-cpu-fill"></i> Client-Side AI &amp; Machine Learning Engine
+          </div>
+          <h2 class="tl-section-title">Automated Fake News Veracity Predictor</h2>
+          <p class="text-secondary tl-small">
+            Test any viral headline or article below. Our statistical NLP machine learning model computes exact fake news probabilities, detects emotive sensationalism, and evaluates domain credibility in real time.
+          </p>
+        </div>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="tl-card p-4 shadow-sm bg-white">
+            <div class="row g-3">
+              <div class="col-md-8">
+                <label for="homeClaimInput" class="form-label tl-input-label">Headline / Asserted News Text</label>
+                <textarea id="homeClaimInput" class="form-control" rows="3" placeholder="Paste any viral rumor, news headline, or article excerpt here to test fake news probability..."></textarea>
+                <div class="d-flex flex-wrap gap-2 mt-2 align-items-center">
+                  <span class="tl-micro text-muted">Try sample:</span>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 tl-micro home-preset-btn" data-text="Miracle fruit extract cures diabetes and terminal cancer in 48 hours, Big Pharma hiding patent!" data-url="http://healthy-natural-cures.ru/secret">Cancer Miracle Cure</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 tl-micro home-preset-btn" data-text="WHO and CDC confirm breakthrough synthetic vaccine reduces transmission by 94% across clinical trials." data-url="https://who.int/news/study-results">WHO Vaccine Study</button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2 tl-micro home-preset-btn" data-text="Central bank issues urgent mandate: All ATM withdrawals permanently capped at $50 starting tonight!" data-url="http://breaking-viral-feed.net/panic">ATM Limit Mandate</button>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="homeUrlInput" class="form-label tl-input-label">Source URL (Optional)</label>
+                <input type="url" id="homeUrlInput" class="form-control mb-3" placeholder="https://example.com/article">
+                <button type="button" class="btn btn-tl-primary w-100 py-2 d-flex align-items-center justify-content-center gap-2" id="btnHomeScan">
+                  <i class="bi bi-robot"></i> Run ML Predictor
+                </button>
+                <div class="tl-micro text-muted text-center mt-2">
+                  <i class="bi bi-shield-check text-success me-1"></i> No server latency &bull; Zero data leaks
+                </div>
+              </div>
+            </div>
+
+            <!-- Prediction Result Display -->
+            <div id="homePredictionOutput" class="mt-4 pt-3 border-top d-none">
+              <div class="row align-items-center gy-3">
+                <div class="col-md-4 text-center border-end">
+                  <div class="tl-micro text-muted text-uppercase fw-semibold mb-1">Fake News Probability</div>
+                  <div class="display-5 fw-bold font-monospace" id="homeFakePct">--%</div>
+                  <span class="badge px-3 py-1 mt-1" id="homeVerdictBadge">Likely False</span>
+                </div>
+                <div class="col-md-8">
+                  <div class="fw-semibold text-dark tl-small mb-1" id="homeSummaryText">Analysis summary</div>
+                  <div class="row g-2 text-center tl-micro mb-2">
+                    <div class="col-3 p-2 bg-light rounded border">
+                      <div class="text-muted">Sensationalism</div>
+                      <div class="fw-bold text-dark" id="homeSensationalism">--</div>
+                    </div>
+                    <div class="col-3 p-2 bg-light rounded border">
+                      <div class="text-muted">Linguistic Bias</div>
+                      <div class="fw-bold text-dark" id="homeBias">--</div>
+                    </div>
+                    <div class="col-3 p-2 bg-light rounded border">
+                      <div class="text-muted">Source Trust</div>
+                      <div class="fw-bold text-dark" id="homeSourceTrust">--</div>
+                    </div>
+                    <div class="col-3 p-2 bg-light rounded border">
+                      <div class="text-muted">Plausibility</div>
+                      <div class="fw-bold text-dark" id="homePlausibility">--</div>
+                    </div>
+                  </div>
+                  <div id="homeSignalsList" class="tl-micro text-secondary"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. SHORT EXPLANATION -->
+  <section class="py-5 bg-white border-bottom" id="overview">
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-8">
+          <h2 class="tl-section-title">A Structured Workbench For Cognitive Sovereignty</h2>
+          <p class="tl-section-lead text-secondary mt-3">
+            In an ecosystem saturated with automated synthetic claims and automated detectors that spit out opaque "True" or "False" percentages, TruthLens returns agency to human evaluators.
+          </p>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-3">
+        <div class="col-md-4">
+          <div class="tl-card h-100 p-4">
+            <div class="tl-feature-icon-wrapper mb-3 text-primary bg-light">
+              <i class="bi bi-journal-text fs-3"></i>
+            </div>
+            <h3 class="tl-h3 mb-2">Claim Isolation</h3>
+            <p class="text-secondary tl-small mb-0">
+              Dissect sensationalist media narratives into distinct, verifiable propositional claims before collecting records or drawing emotional impressions.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="tl-card h-100 p-4">
+            <div class="tl-feature-icon-wrapper mb-3 text-primary bg-light">
+              <i class="bi bi-layers fs-3"></i>
+            </div>
+            <h3 class="tl-h3 mb-2">Source Multiplicity</h3>
+            <p class="text-secondary tl-small mb-0">
+              Gather PDFs, empirical peer-reviewed reports, video timecodes, and archival links. Rank each source against standard, transparent domain credibility indicators.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="tl-card h-100 p-4">
+            <div class="tl-feature-icon-wrapper mb-3 text-primary bg-light">
+              <i class="bi bi-journal-check fs-3"></i>
+            </div>
+            <h3 class="tl-h3 mb-2">Audit-Ready Syntheses</h3>
+            <p class="text-secondary tl-small mb-0">
+              Produce immutable audit logs, chronological event tracks, and evidence balance charts that stand up to peer, public, and classroom review.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. HOW IT WORKS -->
+  <section class="py-5 bg-light border-bottom" id="how-it-works">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tl-label text-primary">System Architecture</span>
+        <h2 class="tl-section-title mt-1">How TruthLens Operates</h2>
+        <p class="tl-section-lead text-secondary mx-auto">
+          Four structured stages designed to prevent confirmation bias and systematically assemble verifiable evidence.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+          <div class="tl-step-card h-100 p-4 bg-white rounded-2 border">
+            <div class="tl-step-badge mb-3">01</div>
+            <h3 class="tl-h3 mb-2">Formulate Case</h3>
+            <p class="text-secondary tl-small mb-0">
+              Define the specific factual claim, articulate its context, specify priority levels, and establish criteria for falsification.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="tl-step-card h-100 p-4 bg-white rounded-2 border">
+            <div class="tl-step-badge mb-3">02</div>
+            <h3 class="tl-h3 mb-2">Harvest Records</h3>
+            <p class="text-secondary tl-small mb-0">
+              Input URLs, academic citations, quotes, government data tables, and screen captures directly into the case workspace.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="tl-step-card h-100 p-4 bg-white rounded-2 border">
+            <div class="tl-step-badge mb-3">03</div>
+            <h3 class="tl-h3 mb-2">Index & Evaluate</h3>
+            <p class="text-secondary tl-small mb-0">
+              Classify findings as Supporting, Against, Neutral, or Unverified. Score source provenance, conflict of interest, and reliability.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+          <div class="tl-step-card h-100 p-4 bg-white rounded-2 border">
+            <div class="tl-step-badge mb-3">04</div>
+            <h3 class="tl-h3 mb-2">Publish Dossier</h3>
+            <p class="text-secondary tl-small mb-0">
+              Calculate the aggregate evidentiary confidence score, identify chronological inconsistencies, and generate standardized dossiers.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. CORE FEATURES -->
+  <section class="py-5 bg-white border-bottom" id="features">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tl-label text-primary">Purpose-Built Instrumentation</span>
+        <h2 class="tl-section-title mt-1">Built For In-Depth Investigations</h2>
+        <p class="tl-section-lead text-secondary mx-auto">
+          Features tailored strictly to factual precision, eliminating distractions and decorative clutter.
+        </p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-pie-chart-fill"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Evidence Synthesis</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Real-time balance charts visualize whether claims are corroborated by primary records or undermined by disconfirming datasets.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-clock-history"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Claim Chronology</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Reconstruct timeline progressions to expose chronological anomalies, retroactive revisions, or narratives created post-facto.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-speedometer2"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Confidence Index</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              An evidence-strength metric based on source diversity, methodology, and direct verification—never a simple probabilistic guess.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-patch-check-fill"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Credibility Grading</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Evaluate sources systematically from Very Low to Very High using standardized rubrics for institutional bias and authority.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-file-earmark-text-fill"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Researcher Field Notes</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Keep contextual observations, hypothesis changes, and lead lists closely linked to corresponding records and references.
+            </p>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="tl-card p-4 h-100">
+            <div class="d-flex align-items-center gap-3 mb-3">
+              <span class="tl-icon-box bg-primary-subtle text-primary">
+                <i class="bi bi-printer-fill"></i>
+              </span>
+              <h3 class="tl-h3 mb-0">Auditable Reports</h3>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Generate structured dossiers with complete source bibliographies, verification status badges, and an executive conclusion.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. EVIDENCE CLASSIFICATION SYSTEM -->
+  <section class="py-5 bg-light border-bottom" id="classification">
+    <div class="container">
+      <div class="row align-items-center gy-4 mb-4">
+        <div class="col-lg-7">
+          <span class="tl-label text-primary">Taxonomy Of Truth</span>
+          <h2 class="tl-section-title mt-1">The Four Pillar Evidence Model</h2>
+          <p class="tl-section-lead text-secondary">
+            TruthLens avoids subjective labels like "Fake" or "Real." Every recorded piece of data is categorized by its precise evidentiary relationship to the claim.
+          </p>
+        </div>
+        <div class="col-lg-5 text-lg-end">
+          <div class="d-inline-flex p-2 bg-white rounded-2 border tl-small text-muted align-items-center">
+            <i class="bi bi-info-circle-fill text-primary me-2"></i>
+            Standards follow open journalistic audit protocols
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <!-- Supporting -->
+        <div class="col-md-6 col-xl-3">
+          <div class="tl-classification-card tl-classification-support h-100 p-3 bg-white rounded-2 border">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="tl-badge tl-badge-support">
+                <i class="bi bi-shield-check me-1"></i> Supporting
+              </span>
+              <span class="tl-small text-muted">Affirmative</span>
+            </div>
+            <h4 class="tl-h4 mb-2">Direct Corroboration</h4>
+            <p class="text-secondary tl-small mb-2">
+              Documents, data series, empirical research, or primary audio/video recordings that substantiate the specific factual proposition.
+            </p>
+            <div class="tl-example-box p-2 rounded bg-light border tl-micro">
+              <strong>Example:</strong> Official university registrar verification confirming the graduation date of a public official.
+            </div>
+          </div>
+        </div>
+
+        <!-- Against -->
+        <div class="col-md-6 col-xl-3">
+          <div class="tl-classification-card tl-classification-against h-100 p-3 bg-white rounded-2 border">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="tl-badge tl-badge-against">
+                <i class="bi bi-shield-x me-1"></i> Against
+              </span>
+              <span class="tl-small text-muted">Disproving</span>
+            </div>
+            <h4 class="tl-h4 mb-2">Counter-Evidence</h4>
+            <p class="text-secondary tl-small mb-2">
+              Verifiable proof, official denials with documentation, public records, or peer reviews that falsify or contradict the claim.
+            </p>
+            <div class="tl-example-box p-2 rounded bg-light border tl-micro">
+              <strong>Example:</strong> Raw unedited video proving an alleged viral clip was deliberately cropped to reverse context.
+            </div>
+          </div>
+        </div>
+
+        <!-- Neutral -->
+        <div class="col-md-6 col-xl-3">
+          <div class="tl-classification-card tl-classification-neutral h-100 p-3 bg-white rounded-2 border">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="tl-badge tl-badge-neutral">
+                <i class="bi bi-dash-circle me-1"></i> Neutral
+              </span>
+              <span class="tl-small text-muted">Contextual</span>
+            </div>
+            <h4 class="tl-h4 mb-2">Contextual Background</h4>
+            <p class="text-secondary tl-small mb-2">
+              Relevant reference materials, legal statutes, definitions, or historical context that inform the case without taking a side.
+            </p>
+            <div class="tl-example-box p-2 rounded bg-light border tl-micro">
+              <strong>Example:</strong> Statutory definition of a legal classification referenced in an unverified news article.
+            </div>
+          </div>
+        </div>
+
+        <!-- Needs Verification -->
+        <div class="col-md-6 col-xl-3">
+          <div class="tl-classification-card tl-classification-verify h-100 p-3 bg-white rounded-2 border">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="tl-badge tl-badge-verify">
+                <i class="bi bi-question-circle me-1"></i> Needs Verification
+              </span>
+              <span class="tl-small text-muted">Preliminary</span>
+            </div>
+            <h4 class="tl-h4 mb-2">Pending Provenance</h4>
+            <p class="text-secondary tl-small mb-2">
+              Anonymous tips, unconfirmed social posts, or third-party claims currently undergoing chain-of-custody verification.
+            </p>
+            <div class="tl-example-box p-2 rounded bg-light border tl-micro">
+              <strong>Example:</strong> An unindexed spreadsheet circulated on Telegram pending confirmation of its origin.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. INVESTIGATION WORKFLOW (LIVE SCENARIO) -->
+  <section class="py-5 bg-white border-bottom" id="workflow">
+    <div class="container">
+      <div class="row align-items-center mb-5">
+        <div class="col-lg-8">
+          <span class="tl-label text-primary">Case Walkthrough</span>
+          <h2 class="tl-section-title mt-1">Realistic Investigation Lifecycle</h2>
+          <p class="tl-section-lead text-secondary">
+            Follow how an unsubstantiated viral story is broken down, cataloged, and resolved inside the TruthLens workbench.
+          </p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <a href="investigations.html" class="btn btn-tl-outline">Browse All Case Studies</a>
+        </div>
+      </div>
+
+      <div class="row g-4 align-items-start">
+        <!-- Steps Navigation List -->
+        <div class="col-lg-4">
+          <div class="list-group tl-workflow-list" id="workflowTab" role="tablist">
+            <button class="list-group-item list-group-item-action active p-3" id="wf-step1-tab" data-bs-toggle="list" data-bs-target="#wf-step1" type="button" role="tab">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-primary text-white rounded-pill">Stage 1</span>
+                <span class="fw-semibold text-dark">Claim Definition</span>
+              </div>
+              <small class="text-muted d-block">Log the viral assertion, origin link, and initial tags.</small>
+            </button>
+
+            <button class="list-group-item list-group-item-action p-3" id="wf-step2-tab" data-bs-toggle="list" data-bs-target="#wf-step2" type="button" role="tab">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-secondary text-white rounded-pill">Stage 2</span>
+                <span class="fw-semibold text-dark">Evidence Ingestion</span>
+              </div>
+              <small class="text-muted d-block">Index papers, news articles, and statistical spreadsheets.</small>
+            </button>
+
+            <button class="list-group-item list-group-item-action p-3" id="wf-step3-tab" data-bs-toggle="list" data-bs-target="#wf-step3" type="button" role="tab">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-secondary text-white rounded-pill">Stage 3</span>
+                <span class="fw-semibold text-dark">Credibility Evaluation</span>
+              </div>
+              <small class="text-muted d-block">Score sources, map contradictions, and trace the timeline.</small>
+            </button>
+
+            <button class="list-group-item list-group-item-action p-3" id="wf-step4-tab" data-bs-toggle="list" data-bs-target="#wf-step4" type="button" role="tab">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="badge bg-secondary text-white rounded-pill">Stage 4</span>
+                <span class="fw-semibold text-dark">Conclusion & Report</span>
+              </div>
+              <small class="text-muted d-block">Synthesize an evidence-backed finding with full citations.</small>
+            </button>
+          </div>
+        </div>
+
+        <!-- Workflow Visual Preview -->
+        <div class="col-lg-8">
+          <div class="tab-content bg-light p-4 rounded-2 border" id="workflowTabContent">
+            
+            <!-- Tab 1 -->
+            <div class="tab-pane fade show active" id="wf-step1" role="tabpanel" aria-labelledby="wf-step1-tab">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h4 class="tl-h4 mb-0">Stage 1: Formulation & Scope</h4>
+                <span class="tl-badge tl-badge-draft">Drafting Mode</span>
+              </div>
+              <div class="p-3 bg-white rounded border mb-3">
+                <div class="tl-small text-muted mb-1">Target Proposition</div>
+                <div class="fw-bold text-dark">"Drinking mineral-alkaline solution neutralizes respiratory viral infections."</div>
+                <div class="mt-2 d-flex gap-2">
+                  <span class="badge bg-light text-dark border">Public Health</span>
+                  <span class="badge bg-light text-dark border">Viral Social Media</span>
+                  <span class="badge bg-light text-dark border">TikTok Origin</span>
+                </div>
+              </div>
+              <p class="tl-small text-secondary mb-0">
+                The investigator isolates the medical assertion from emotional commentary, notes its rapid platform dissemination, and creates an investigation case with high priority.
+              </p>
+            </div>
+
+            <!-- Tab 2 -->
+            <div class="tab-pane fade" id="wf-step2" role="tabpanel" aria-labelledby="wf-step2-tab">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h4 class="tl-h4 mb-0">Stage 2: Multi-Source Evidence Capture</h4>
+                <span class="tl-badge tl-badge-active">6 Records Attached</span>
+              </div>
+              <div class="vstack gap-2 mb-3">
+                <div class="p-2 bg-white rounded border d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-file-earmark-pdf text-danger"></i>
+                    <span class="tl-small fw-medium">Clinical Pharmacology Review (Vol 42, 2024)</span>
+                  </div>
+                  <span class="tl-badge tl-badge-against">Against</span>
+                </div>
+                <div class="p-2 bg-white rounded border d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-link-45deg text-primary"></i>
+                    <span class="tl-small fw-medium">TikTok Video Original Post (ID: 982341)</span>
+                  </div>
+                  <span class="tl-badge tl-badge-support">Supporting</span>
+                </div>
+                <div class="p-2 bg-white rounded border d-flex justify-content-between align-items-center">
+                  <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-building text-info"></i>
+                    <span class="tl-small fw-medium">World Health Organization Guidance Advisory</span>
+                  </div>
+                  <span class="tl-badge tl-badge-against">Against</span>
+                </div>
+              </div>
+              <p class="tl-small text-secondary mb-0">
+                Primary medical research and the initial viral recording are logged alongside archived links, file hashes, and direct quotes.
+              </p>
+            </div>
+
+            <!-- Tab 3 -->
+            <div class="tab-pane fade" id="wf-step3" role="tabpanel" aria-labelledby="wf-step3-tab">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h4 class="tl-h4 mb-0">Stage 3: Credibility Assessment & Timeline</h4>
+                <span class="tl-badge tl-badge-active">Analysis In Progress</span>
+              </div>
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <div class="p-3 bg-white rounded border text-center">
+                    <div class="text-muted tl-small">Source Credibility Ratio</div>
+                    <div class="h4 text-success my-1">4.8 / 5.0</div>
+                    <div class="tl-micro text-muted">Against Claim (Peer-Reviewed)</div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="p-3 bg-white rounded border text-center">
+                    <div class="text-muted tl-small">Viral Post Credibility</div>
+                    <div class="h4 text-danger my-1">1.2 / 5.0</div>
+                    <div class="tl-micro text-muted">Unattributed Anonymous Creator</div>
+                  </div>
+                </div>
+              </div>
+              <p class="tl-small text-secondary mb-0">
+                Systematic scoring shows that counter-evidence comes from high-credibility institutional sources, while supporting evidence comes from anonymous, unverified profiles.
+              </p>
+            </div>
+
+            <!-- Tab 4 -->
+            <div class="tab-pane fade" id="wf-step4" role="tabpanel" aria-labelledby="wf-step4-tab">
+              <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3">
+                <h4 class="tl-h4 mb-0">Stage 4: Transparent Synthesis & Report</h4>
+                <span class="tl-badge tl-badge-completed">Case Finalized</span>
+              </div>
+              <div class="p-3 bg-white rounded border mb-3">
+                <div class="d-flex align-items-center gap-2 mb-2">
+                  <span class="badge bg-danger">Verdict: Falsified by Scientific Data</span>
+                  <span class="tl-small text-muted">Confidence: 94% (Very High)</span>
+                </div>
+                <p class="tl-small text-secondary mb-0">
+                  "The claim that an alkaline solution neutralizes respiratory infections contradicts basic human gastrointestinal biochemistry and is refuted by eight peer-reviewed clinical studies. No verifiable clinical evidence supports the original viral post."
+                </p>
+              </div>
+              <div class="d-flex justify-content-end gap-2">
+                <button class="btn btn-sm btn-tl-outline"><i class="bi bi-filetype-pdf me-1"></i> Download Dossier (PDF)</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8. WHY TRUTHLENS IS DIFFERENT -->
+  <section class="py-5 bg-light border-bottom" id="difference">
+    <div class="container">
+      <div class="text-center mb-5">
+        <span class="tl-label text-primary">Methodological Superiority</span>
+        <h2 class="tl-section-title mt-1">Why TruthLens Is Different</h2>
+        <p class="tl-section-lead text-secondary mx-auto">
+          We reject black-box automation in favor of transparent, documented, and reproducible analytical workflows.
+        </p>
+      </div>
+
+      <div class="table-responsive bg-white rounded-2 border shadow-sm">
+        <table class="table table-hover align-middle mb-0 tl-comparison-table">
+          <thead>
+            <tr>
+              <th scope="col" style="width: 30%;">Evaluation Criteria</th>
+              <th scope="col" class="text-secondary" style="width: 35%;">Typical "AI Fake-News Detectors"</th>
+              <th scope="col" class="text-primary bg-primary-subtle" style="width: 35%;">TruthLens Investigation System</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fw-semibold text-dark">Underlying Method</td>
+              <td class="text-secondary">
+                <i class="bi bi-x-circle-fill text-danger me-1"></i> Opaque Machine Learning token prediction
+              </td>
+              <td class="bg-primary-subtle fw-medium text-dark">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Human-directed evidence synthesis & primary sourcing
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-semibold text-dark">Result Output</td>
+              <td class="text-secondary">
+                <i class="bi bi-x-circle-fill text-danger me-1"></i> A single percentage score (e.g., "78% Fake")
+              </td>
+              <td class="bg-primary-subtle fw-medium text-dark">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Structured dossier balancing supporting & counter sources
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-semibold text-dark">Source Transparency</td>
+              <td class="text-secondary">
+                <i class="bi bi-x-circle-fill text-danger me-1"></i> Absent or unreferenced training web crawl
+              </td>
+              <td class="bg-primary-subtle fw-medium text-dark">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Full chain of custody with links, citations, and hashes
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-semibold text-dark">Complex Claims</td>
+              <td class="text-secondary">
+                <i class="bi bi-x-circle-fill text-danger me-1"></i> Struggles with nuanced, multi-part arguments
+              </td>
+              <td class="bg-primary-subtle fw-medium text-dark">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Separates complex narratives into individual testable claims
+              </td>
+            </tr>
+            <tr>
+              <td class="fw-semibold text-dark">Auditing & Reproducibility</td>
+              <td class="text-secondary">
+                <i class="bi bi-x-circle-fill text-danger me-1"></i> Impossible to audit logic steps
+              </td>
+              <td class="bg-primary-subtle fw-medium text-dark">
+                <i class="bi bi-check-circle-fill text-success me-1"></i> Every conclusion links directly to numbered evidence records
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9. CALL TO ACTION -->
+  <section class="py-6 tl-cta-section text-white text-center">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-8">
+          <span class="tl-badge bg-white text-dark mb-3">Academic & Research Workspace</span>
+          <h2 class="display-6 fw-bold mb-3 text-white">Upgrade From Passive Consumption To Systematic Investigation</h2>
+          <p class="lead text-white-50 mb-4">
+            Build your first evidence dossier today. Free, open, and designed for students, educators, and serious analysts.
+          </p>
+          <div class="d-flex flex-wrap justify-content-center gap-3">
+            <a href="create-investigation.html" class="btn btn-light btn-lg fw-semibold px-4">
+              <i class="bi bi-plus-circle me-2"></i>Create Investigation Case
+            </a>
+            <a href="dashboard.html" class="btn btn-outline-light btn-lg px-4">
+              <i class="bi bi-speedometer2 me-2"></i>Explore Dashboard
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10. FOOTER -->
+  <footer class="tl-footer pt-5 pb-4 bg-dark text-white border-top">
+    <div class="container">
+      <div class="row gy-4 pb-4 border-bottom border-secondary">
+        <div class="col-lg-4">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="tl-brand-icon bg-white text-dark">
+              <i class="bi bi-shield-check"></i>
+            </span>
+            <span class="tl-brand-text text-white">Truth<span class="text-info">Lens</span></span>
+          </div>
+          <p class="tl-small text-white-50 mb-3 pe-lg-4">
+            A Web-Based Fake News Investigation and Evidence Management System developed for college minor research, investigative journalism, and source verification.
+          </p>
+          <div class="tl-small text-white-50">
+            <i class="bi bi-geo-alt me-1"></i> Academic Research Initiative
+          </div>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h4 class="tl-h4 text-white mb-3">Workspaces</h4>
+          <ul class="list-unstyled tl-small vstack gap-2 text-white-50">
+            <li><a href="admin-dashboard.html" class="text-white-50 text-decoration-none"><i class="bi bi-shield-shaded me-1"></i> Admin Console</a></li>
+            <li><a href="dashboard.html" class="text-white-50 text-decoration-none"><i class="bi bi-search me-1"></i> Investigator Lab</a></li>
+            <li><a href="user-dashboard.html" class="text-white-50 text-decoration-none"><i class="bi bi-person-heart me-1"></i> Citizen Portal</a></li>
+            <li><a href="investigations.html" class="text-white-50 text-decoration-none">All Cases</a></li>
+            <li><a href="evidence.html" class="text-white-50 text-decoration-none">Evidence Vault</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h4 class="tl-h4 text-white mb-3">Evidence Model</h4>
+          <ul class="list-unstyled tl-small vstack gap-2 text-white-50">
+            <li><span class="text-white-50">Supporting Records</span></li>
+            <li><span class="text-white-50">Against / Falsifying</span></li>
+            <li><span class="text-white-50">Neutral Context</span></li>
+            <li><span class="text-white-50">Needs Verification</span></li>
+            <li><span class="text-white-50">Confidence Metrics</span></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h4 class="tl-h4 text-white mb-3">Account</h4>
+          <ul class="list-unstyled tl-small vstack gap-2 text-white-50">
+            <li><a href="login.html" class="text-white-50 text-decoration-none">Sign In</a></li>
+            <li><a href="register.html" class="text-white-50 text-decoration-none">Register Account</a></li>
+            <li><a href="profile.html" class="text-white-50 text-decoration-none">Profile</a></li>
+            <li><a href="settings.html" class="text-white-50 text-decoration-none">System Settings</a></li>
+          </ul>
+        </div>
+
+        <div class="col-6 col-md-3 col-lg-2">
+          <h4 class="tl-h4 text-white mb-3">System Info</h4>
+          <p class="tl-small text-white-50 mb-2">
+            Built with Bootstrap 5, Vanilla JS, and strict semantic HTML.
+          </p>
+          <div class="badge bg-secondary text-white fw-normal">v1.0 Minor Project</div>
+        </div>
+      </div>
+
+      <div class="d-flex flex-wrap justify-content-between align-items-center pt-4 tl-small text-white-50">
+        <div>
+          &copy; 2026 TruthLens Workspace. Built for transparent, evidence-first investigations.
+        </div>
+        <div class="d-flex gap-3 mt-2 mt-md-0">
+          <a href="#mainNav" class="text-white-50 text-decoration-none"><i class="bi bi-arrow-up-circle me-1"></i> Back to Top</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration, ML Engine & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/ml-model.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- TruthLens Main Application Script -->
+  <script src="js/main.js"></script>
+
+  <!-- Home ML Scanner Interactive Controller -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      'use strict';
+      const btnScan = document.getElementById('btnHomeScan');
+      const claimInput = document.getElementById('homeClaimInput');
+      const urlInput = document.getElementById('homeUrlInput');
+      const outputBox = document.getElementById('homePredictionOutput');
+
+      // Sample preset buttons
+      document.querySelectorAll('.home-preset-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (claimInput) claimInput.value = btn.getAttribute('data-text');
+          if (urlInput) urlInput.value = btn.getAttribute('data-url');
+          if (btnScan) btnScan.click();
+        });
+      });
+
+      if (btnScan && claimInput) {
+        btnScan.addEventListener('click', () => {
+          const text = claimInput.value.trim();
+          const url = urlInput ? urlInput.value.trim() : '';
+          if (!text) {
+            alert('Please paste a headline or text snippet to evaluate.');
+            claimInput.focus();
+            return;
+          }
+
+          if (!window.TruthLensML) {
+            alert('ML Model initializing, please retry.');
+            return;
+          }
+
+          const pred = window.TruthLensML.predict(text, url);
+          if (outputBox) outputBox.classList.remove('d-none');
+
+          const fakePctEl = document.getElementById('homeFakePct');
+          if (fakePctEl) {
+            fakePctEl.textContent = `${pred.fakeProbability}%`;
+            fakePctEl.className = `display-5 fw-bold font-monospace ${pred.fakeProbability >= 70 ? 'text-danger' : (pred.fakeProbability <= 35 ? 'text-success' : 'text-warning')}`;
+          }
+
+          const verdictBadge = document.getElementById('homeVerdictBadge');
+          if (verdictBadge) {
+            verdictBadge.textContent = pred.verdict;
+            verdictBadge.className = `badge px-3 py-1 mt-1 ${pred.badgeClass}`;
+          }
+
+          const summaryText = document.getElementById('homeSummaryText');
+          if (summaryText) summaryText.textContent = pred.summary;
+
+          const sensEl = document.getElementById('homeSensationalism');
+          if (sensEl) sensEl.textContent = `${pred.metrics.sensationalism}%`;
+
+          const biasEl = document.getElementById('homeBias');
+          if (biasEl) biasEl.textContent = `${pred.metrics.linguisticBias}%`;
+
+          const trustEl = document.getElementById('homeSourceTrust');
+          if (trustEl) trustEl.textContent = `${pred.metrics.sourceCredibility}%`;
+
+          const plausEl = document.getElementById('homePlausibility');
+          if (plausEl) plausEl.textContent = `${pred.metrics.factualPlausibility}%`;
+
+          const signalsList = document.getElementById('homeSignalsList');
+          if (signalsList && pred.signals && pred.signals.length > 0) {
+            signalsList.innerHTML = `<span class="fw-semibold text-dark me-1">Extracted AI Features:</span> ` +
+              pred.signals.map(s => `<span class="badge bg-secondary-subtle text-secondary me-1">${s}</span>`).join('');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

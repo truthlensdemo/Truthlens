@@ -1,0 +1,89 @@
+{
+  "model_name": "Calibrated Complement NB",
+  "trained_at": "2026-10-10T10:09:35.075187",
+  "dataset_path": "D:\\bin\\project backup\\frontend\\data\\dataset.csv",
+  "total_samples": 11093,
+  "train_samples": 8874,
+  "test_samples": 2219,
+  "accuracy": 0.9995,
+  "f1_score": 0.9996,
+  "precision": 0.9991,
+  "recall": 1.0,
+  "roc_auc": 1.0,
+  "confusion_matrix": [
+    [
+      1051,
+      1
+    ],
+    [
+      0,
+      1167
+    ]
+  ],
+  "top_fake_features": [
+    "mainstream",
+    "dissolves",
+    "cells",
+    "refuses report",
+    "media refuses",
+    "mainstream media",
+    "refuses",
+    "media",
+    "cure",
+    "proven",
+    "proven cure",
+    "shocking",
+    "proves",
+    "banned",
+    "symptoms"
+  ],
+  "top_real_features": [
+    "data",
+    "annualized",
+    "rate",
+    "demonstrates",
+    "peer reviewed",
+    "peer",
+    "reviewed",
+    "reviewed study",
+    "reduces risk",
+    "reduces",
+    "surveillance data",
+    "epidemiological",
+    "percent decline",
+    "decline",
+    "epidemiological surveillance"
+  ],
+  "candidate_benchmarks": {
+    "Calibrated Logistic Regression": {
+      "accuracy": 0.9991,
+      "precision": 0.9991,
+      "recall": 0.9991,
+      "f1_score": 0.9991
+    },
+    "Calibrated Complement NB": {
+      "accuracy": 0.9995,
+      "precision": 0.9991,
+      "recall": 1.0,
+      "f1_score": 0.9996
+    },
+    "Calibrated Multinomial NB": {
+      "accuracy": 0.9995,
+      "precision": 0.9991,
+      "recall": 1.0,
+      "f1_score": 0.9996
+    },
+    "Calibrated SGD Classifier": {
+      "accuracy": 0.9991,
+      "precision": 0.9991,
+      "recall": 0.9991,
+      "f1_score": 0.9991
+    },
+    "Random Forest Classifier": {
+      "accuracy": 0.9865,
+      "precision": 0.9749,
+      "recall": 1.0,
+      "f1_score": 0.9873
+    }
+  }
+}

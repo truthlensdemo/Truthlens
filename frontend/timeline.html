@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audit Timeline — TruthLens Workspace</title>
+  <meta name="description" content="Chronological chain-of-custody audit log for fact-checking investigations, evidence ingestion, note logging, and status transitions in TruthLens.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Shell Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Investigation & Timeline Stylesheet -->
+  <link rel="stylesheet" href="css/investigation.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Identity Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark">Abinash Panigrahy</div>
+            <div class="tl-micro text-muted text-truncate">Senior Fact-Checker</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0 tl-small">
+                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                <li class="breadcrumb-item"><a href="investigations.html" class="text-decoration-none text-muted">Investigations</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Investigation Timeline</li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark">Abinash Panigrahy</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Header & Inquest Summary -->
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <h1 class="tl-h1 mb-1">Investigation Activity Chronology</h1>
+            <p class="text-secondary tl-small mb-0">
+              Immutable chain-of-custody verification trail tracking every evidence addition, classification revision, and hypothesis update.
+            </p>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <a href="investigation-details.html?id=TL-8429" id="timelineBackToDossierBtn" class="btn btn-tl-outline d-inline-flex align-items-center gap-2">
+              <i class="bi bi-arrow-left"></i>
+              <span>Back to Dossier</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- FILTER & CASE SELECTOR TOOLBAR -->
+        <div class="tl-card p-3 mb-4">
+          <div class="row g-2 align-items-center">
+            
+            <!-- Case Inquest Scope Selector -->
+            <div class="col-12 col-md-4">
+              <label for="timelineCaseFilter" class="form-label tl-micro text-muted text-uppercase fw-bold mb-1">Case Dossier</label>
+              <select class="form-select tl-small" id="timelineCaseFilter">
+                <option value="TL-8429" selected>#TL-8429: AI Developer Replacement</option>
+                <option value="TL-8411">#TL-8411: Alkaline Solution Neutralization</option>
+                <option value="TL-8365">#TL-8365: Central Bank Cash Withdrawal Caps</option>
+                <option value="all">All Workspace Activities (Cross-Case)</option>
+              </select>
+            </div>
+
+            <!-- Activity Type Filter -->
+            <div class="col-6 col-md-3">
+              <label for="timelineActivityFilter" class="form-label tl-micro text-muted text-uppercase fw-bold mb-1">Activity Type</label>
+              <select class="form-select tl-small" id="timelineActivityFilter">
+                <option value="all" selected>All Activity Types</option>
+                <option value="Investigation Created">Investigation Created</option>
+                <option value="Evidence Added">Evidence Added</option>
+                <option value="Evidence Classified">Evidence Classified</option>
+                <option value="Note Added">Note Added</option>
+                <option value="Evidence Updated">Evidence Updated</option>
+                <option value="Conclusion Updated">Conclusion Updated</option>
+              </select>
+            </div>
+
+            <!-- Quick Text Filter -->
+            <div class="col-6 col-md-3">
+              <label for="timelineSearchInput" class="form-label tl-micro text-muted text-uppercase fw-bold mb-1">Search Audit Trail</label>
+              <div class="input-group">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
+                <input type="search" class="form-control border-start-0 tl-small" id="timelineSearchInput" placeholder="Filter descriptions, sources, users...">
+              </div>
+            </div>
+
+            <!-- Export Audit Trail -->
+            <div class="col-12 col-md-2 d-flex align-items-end">
+              <button type="button" class="btn btn-tl-secondary w-100 tl-small d-inline-flex align-items-center justify-content-center gap-1" onclick="window.print();">
+                <i class="bi bi-printer"></i>
+                <span>Print Audit</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Counter & Reset Line -->
+          <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 mt-2 border-top gap-2">
+            <div class="tl-small text-muted">
+              Displaying <span id="timelineItemCount" class="fw-semibold text-dark">6</span> recorded chronological events
+            </div>
+            <button type="button" class="btn btn-sm btn-link text-decoration-none text-secondary tl-small p-0 d-none" id="resetTimelineFiltersBtn">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Reset Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- TARGET CLAIM BANNER -->
+        <div class="tl-card p-3 mb-4 bg-light border-start-primary" id="timelineCaseScopeBanner">
+          <div class="d-flex align-items-start justify-content-between">
+            <div>
+              <span class="tl-label text-muted d-block mb-1" id="timelineCaseScopeLabel">Current Case Inquest Scope (#TL-8429)</span>
+              <p class="fw-semibold text-dark mb-0 fs-6" id="timelineCaseScopeClaim">
+                "Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years."
+              </p>
+            </div>
+            <span class="tl-badge tl-badge-active ms-3 flex-shrink-0" id="timelineCaseScopeBadge">Active Inquiry</span>
+          </div>
+        </div>
+
+        <!-- VERTICAL TIMELINE CONTAINER -->
+        <!-- Structure ready for Jinja2: {% for event in timeline_events %} ... {% endfor %} -->
+        <div class="tl-card p-3 p-md-5">
+          
+          <div class="tl-vertical-timeline" id="timelineContainer">
+
+            <!-- EVENT 1: Conclusion Updated -->
+            <div class="tl-timeline-item" data-activity="Conclusion Updated" data-user="Abinash Panigrahy" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-success text-white">
+                <i class="bi bi-check2-circle"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge tl-badge-completed">Conclusion Updated</span>
+                    <span class="badge bg-light text-dark border tl-micro">Final Evaluation Draft</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Sep 10, 2026</strong> at 18:30 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Executive Inquest Verdict Formulated</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Investigator updated the final conclusion synthesis to: <em>"Refuted by Empirical Data."</em> Incorporated empirical limits from ACM peer-reviewed benchmarks demonstrating persistent multithreading race conditions, alongside BLS 10-year forecasts projecting 17% workforce expansion.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Logged by: <strong class="text-dark">Abinash Panigrahy</strong> (Lead Investigator)</span>
+                  <span class="text-success"><i class="bi bi-shield-check me-1"></i>Confidence Adjusted: <strong>82% Substantial</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVENT 2: Evidence Updated -->
+            <div class="tl-timeline-item" data-activity="Evidence Updated" data-user="Abinash Panigrahy" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-info text-white">
+                <i class="bi bi-arrow-repeat"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge tl-badge-active">Evidence Updated</span>
+                    <span class="badge bg-light text-dark border tl-micro">Record #EV-1088</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Sep 09, 2026</strong> at 14:15 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Methodology Caveat Appended to Tech Summit Keynote</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Updated descriptive notes for the primary video stream (DevAuto Keynote). Added caveat detailing that commercial demonstrations were conducted in closed sandbox environments using HumanEval unit tests rather than production codebases.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Logged by: <strong class="text-dark">Abinash Panigrahy</strong></span>
+                  <span><i class="bi bi-tag me-1"></i>Credibility Retained: <strong>2/5 (Low - Marketing Bias)</strong></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVENT 3: Note Added -->
+            <div class="tl-timeline-item" data-activity="Note Added" data-user="Abinash Panigrahy" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-primary text-white">
+                <i class="bi bi-sticky"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge tl-note-badge-observation">Note Added</span>
+                    <span class="badge bg-light text-dark border tl-micro">Observation</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Sep 08, 2026</strong> at 16:40 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Field Observation: Benchmarking Discrepancy Logged</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Researcher logged working hypothesis: <em>"HumanEval pass@1 synthetic test cases measure isolated syntax completion, not systems maintenance. Real software engineering centers on integration invariants, which models degrade upon refactoring."</em>
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Logged by: <strong class="text-dark">Abinash Panigrahy</strong></span>
+                  <span><i class="bi bi-pin-angle-fill text-primary me-1"></i>Pinned to Workspace</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVENT 4: Evidence Classified -->
+            <div class="tl-timeline-item" data-activity="Evidence Classified" data-user="Sarah Jenkins (Peer Reviewer)" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-danger text-white">
+                <i class="bi bi-shield-x"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge tl-badge-against">Evidence Classified</span>
+                    <span class="badge bg-light text-dark border tl-micro">Classification Audit</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Sep 05, 2026</strong> at 11:20 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Peer Classification Assigned: "Against"</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Source <em>ACM Empirical Software Engineering</em> evaluated against the target proposition. Classified as <strong>Against</strong> due to empirical proof that automated agents introduce critical race conditions in 68% of enterprise pull requests.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Logged by: <strong class="text-dark">Sarah Jenkins</strong> (Peer Reviewer)</span>
+                  <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Rated: 5/5 Very High Credibility</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVENT 5: Evidence Added -->
+            <div class="tl-timeline-item" data-activity="Evidence Added" data-user="Abinash Panigrahy" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-secondary text-white">
+                <i class="bi bi-file-earmark-plus"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge bg-secondary-subtle text-dark border">Evidence Added</span>
+                    <span class="badge bg-light text-dark border tl-micro">Primary Document</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Aug 27, 2026</strong> at 09:45 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Attached Primary Government Labor Statistics</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Ingested official dataset: <em>U.S. Bureau of Labor Statistics 2024–2034 Occupational Outlook Handbook</em>. Recorded projections showing 17% national job growth for software analysts and developers.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Logged by: <strong class="text-dark">Abinash Panigrahy</strong></span>
+                  <span><i class="bi bi-link-45deg me-1"></i>Source: <code>bls.gov/ooh/...</code></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- EVENT 6: Investigation Created -->
+            <div class="tl-timeline-item" data-activity="Investigation Created" data-user="Abinash Panigrahy" data-case="TL-8429">
+              <div class="tl-timeline-marker bg-primary text-white">
+                <i class="bi bi-folder-plus"></i>
+              </div>
+              <div class="tl-timeline-content tl-card p-3 p-md-4">
+                <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
+                  <div class="d-flex flex-wrap align-items-center gap-2">
+                    <span class="tl-badge tl-badge-draft">Investigation Created</span>
+                    <span class="badge bg-light text-dark border tl-micro">Genesis Record</span>
+                  </div>
+                  <div class="text-muted tl-micro">
+                    <i class="bi bi-calendar3 me-1"></i><strong>Aug 24, 2026</strong> at 10:00 IST
+                  </div>
+                </div>
+
+                <h3 class="tl-h4 text-dark mb-2">Dossier Formulated: Case #TL-8429</h3>
+                <p class="tl-small text-secondary mb-3">
+                  Investigation dossier initiated following viral social media dissemination of commercial keynote assertions. Target proposition framed with falsification criteria, priority designated as <strong>Critical</strong>, and baseline category set to <em>Artificial Intelligence</em>.
+                </p>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-2 border-top tl-micro text-muted">
+                  <span><i class="bi bi-person-check me-1"></i>Initiated by: <strong class="text-dark">Abinash Panigrahy</strong></span>
+                  <span><i class="bi bi-shield-check me-1"></i>Chain-of-Custody Genesis Point</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Empty State within Timeline Filter -->
+          <div id="noTimelineMatches" class="text-center py-5 d-none">
+            <div class="tl-empty-state-icon mx-auto mb-2">
+              <i class="bi bi-clock-history"></i>
+            </div>
+            <h4 class="tl-h4 text-dark mb-1">No Matching Chronological Events</h4>
+            <p class="tl-small text-muted mb-3">No activity records matched your filter criteria.</p>
+            <button type="button" class="btn btn-sm btn-tl-secondary" id="emptyResetTimelineBtn">Reset Filter Criteria</button>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- App Shell Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session?
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller & Timeline Filtering -->
+  <script src="js/main.js"></script>
+  <script src="js/timeline.js"></script>
+</body>
+</html>

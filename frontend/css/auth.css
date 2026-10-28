@@ -1,0 +1,142 @@
+/* ==========================================================================
+   TruthLens Authentication Module Stylesheet
+   Scope: login.html, register.html, forgot-password modal
+   ========================================================================== */
+
+.tl-auth-body {
+  background-color: var(--tl-bg);
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.tl-auth-container {
+  width: 100%;
+  min-height: 100vh;
+}
+
+.tl-auth-branding {
+  background: linear-gradient(145deg, #0F172A 0%, #1E3A5F 60%, #152A45 100%);
+  position: relative;
+  overflow: hidden;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.tl-auth-branding::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -20%;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.tl-auth-pitch {
+  max-width: 520px;
+}
+
+.tl-auth-case-card {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tl-auth-case-card:hover {
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  transform: translateY(-2px);
+}
+
+.tl-auth-form-wrapper {
+  max-width: 440px;
+}
+
+.tl-input-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--tl-text-primary);
+  margin-bottom: 6px;
+}
+
+.tl-auth-link {
+  color: var(--tl-primary);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+
+.tl-auth-link:hover {
+  color: var(--tl-primary-hover);
+  text-decoration: underline !important;
+}
+
+.input-group .form-control {
+  border-color: var(--tl-border);
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: var(--tl-text-primary);
+}
+
+.input-group .form-control:focus {
+  border-color: var(--tl-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+}
+
+.input-group-text {
+  border-color: var(--tl-border);
+  color: var(--tl-text-secondary);
+}
+
+.tl-password-toggle {
+  border-color: var(--tl-border);
+  background-color: #FFFFFF;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tl-password-toggle:hover {
+  background-color: var(--tl-surface-subtle);
+  color: var(--tl-text-primary);
+}
+
+.form-check-input:checked {
+  background-color: var(--tl-primary);
+  border-color: var(--tl-primary);
+}
+
+.form-check-input:focus {
+  border-color: var(--tl-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.15);
+}
+
+.btn-tl-primary:disabled {
+  background-color: var(--tl-secondary);
+  border-color: var(--tl-secondary);
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+@media (max-width: 991.98px) {
+  .tl-auth-form-wrapper {
+    max-width: 100%;
+  }
+}
+
+/* ==========================================================================
+   Dark Mode Overrides for Authentication Module
+   ========================================================================== */
+[data-theme="dark"] .tl-password-toggle,
+[data-bs-theme="dark"] .tl-password-toggle {
+  background-color: var(--tl-surface);
+  border-color: var(--tl-border);
+  color: var(--tl-text-secondary);
+}
+
+[data-theme="dark"] .tl-password-toggle:hover,
+[data-bs-theme="dark"] .tl-password-toggle:hover {
+  background-color: var(--tl-surface-subtle);
+  color: var(--tl-primary);
+}

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Account — TruthLens Investigation Workspace</title>
+  <meta name="description" content="Create a TruthLens investigator account to systematically analyze claims and manage evidence dossiers.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Auth-Specific Stylesheet -->
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="tl-auth-body">
+  <!-- Top-Right Floating Theme Toggle -->
+  <div class="position-fixed top-0 end-0 p-3" style="z-index: 1060;">
+    <button class="btn btn-light tl-btn-icon shadow-sm" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+      <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+    </button>
+  </div>
+
+
+  <main class="tl-auth-container">
+    <div class="row g-0 h-100 min-vh-100">
+      
+      <!-- LEFT COLUMN: Brand Identity & Analytical Rigor (Desktop/Tablet) -->
+      <div class="col-lg-6 d-none d-lg-flex flex-column justify-content-between tl-auth-branding p-5">
+        <div>
+          <a class="navbar-brand d-inline-flex align-items-center gap-2 text-white mb-5 text-decoration-none" href="index.html">
+            <span class="tl-brand-icon bg-white text-dark shadow-sm">
+              <i class="bi bi-shield-check"></i>
+            </span>
+            <span class="tl-brand-text text-white fs-4">Truth<span class="text-info">Lens</span></span>
+          </a>
+
+          <div class="tl-auth-pitch mt-4 pe-xl-5">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-10 text-white-50 tl-micro text-uppercase fw-semibold mb-3 border border-white border-opacity-10">
+              <i class="bi bi-people-fill text-info"></i>
+              Collaborative Investigation Grid
+            </div>
+            <h1 class="display-6 fw-bold text-white mb-3">
+              Join a community of objective fact-checkers.
+            </h1>
+            <p class="text-white-50 tl-body lead">
+              Create your secure researcher profile. Index evidence, trace contradictions across primary databases, and build reproducible dossiers without opaque automated black boxes.
+            </p>
+          </div>
+        </div>
+
+        <!-- Trust Features List -->
+        <div class="vstack gap-3 text-white-50 tl-small mb-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="tl-icon-box bg-white bg-opacity-10 text-info flex-shrink-0">
+              <i class="bi bi-diagram-3"></i>
+            </div>
+            <div>
+              <span class="text-white fw-semibold d-block">Structured Evidence Classification</span>
+              Classify records into Supporting, Against, Neutral, and Unverified buckets.
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="tl-icon-box bg-white bg-opacity-10 text-info flex-shrink-0">
+              <i class="bi bi-journal-check"></i>
+            </div>
+            <div>
+              <span class="text-white fw-semibold d-block">Immutable Chronology Audit</span>
+              Track temporal discrepancies and establish transparent chains of custody.
+            </div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between align-items-center text-white-50 tl-micro pt-3 border-top border-white border-opacity-10">
+          <span>&copy; 2026 TruthLens Workspace</span>
+          <span>Open Academic Standard</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Registration Form -->
+      <div class="col-12 col-lg-6 d-flex align-items-center justify-content-center p-4 p-md-5 bg-white">
+        <div class="tl-auth-form-wrapper w-100">
+          
+          <!-- Mobile Brand Heading -->
+          <div class="d-lg-none mb-4 text-center">
+            <a class="navbar-brand d-inline-flex align-items-center gap-2 text-decoration-none mb-2" href="index.html">
+              <span class="tl-brand-icon">
+                <i class="bi bi-shield-check"></i>
+              </span>
+              <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+            </a>
+            <p class="text-secondary tl-small">Evidence-Based Fake News Investigation System</p>
+          </div>
+
+          <div class="mb-4">
+            <h2 class="tl-h2 mb-1">Create investigator account</h2>
+            <p class="text-secondary tl-small mb-0">
+              Set up your profile to begin managing investigation cases.
+            </p>
+          </div>
+
+          <!-- Alert Containers for Server/Client Messages -->
+          <div id="authAlert" class="alert d-none align-items-center gap-2 p-2 mb-3 tl-small" role="alert" aria-live="assertive">
+            <i class="bi bi-exclamation-triangle-fill fs-6 flex-shrink-0" id="authAlertIcon"></i>
+            <span id="authAlertMessage">Please resolve validation errors before continuing.</span>
+          </div>
+
+          <!-- Registration Form: Formatted for future POST /register connection -->
+          <form id="registerForm" method="POST" action="/register" novalidate autocomplete="on">
+            
+            <!-- Full Name Input -->
+            <div class="mb-3">
+              <label for="fullName" class="form-label tl-input-label">Full Name</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                  <i class="bi bi-person"></i>
+                </span>
+                <input 
+                  type="text" 
+                  class="form-control border-start-0" 
+                  id="fullName" 
+                  name="full_name" 
+                  placeholder="Abinash Panigrahy" 
+                  required 
+                  autocomplete="name"
+                  aria-describedby="fullNameFeedback">
+                <div id="fullNameFeedback" class="invalid-feedback">
+                  Please enter your full name or professional alias.
+                </div>
+              </div>
+            </div>
+
+            <!-- Email Input -->
+            <div class="mb-3">
+              <label for="email" class="form-label tl-input-label">Institutional / Professional Email</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                  <i class="bi bi-envelope"></i>
+                </span>
+                <input 
+                  type="email" 
+                  class="form-control border-start-0" 
+                  id="email" 
+                  name="email" 
+                  placeholder="analyst@university.edu" 
+                  required 
+                  autocomplete="email"
+                  spellcheck="false"
+                  aria-describedby="emailFeedback">
+                <div id="emailFeedback" class="invalid-feedback">
+                  Please provide a valid working email address.
+                </div>
+              </div>
+            </div>
+
+            <!-- Account Role Selection -->
+            <div class="mb-3">
+              <label for="userRoleSelect" class="form-label tl-input-label">Workspace Role</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                  <i class="bi bi-person-badge"></i>
+                </span>
+                <select class="form-select border-start-0" id="userRoleSelect" name="role">
+                  <option value="user" selected>Community Fact-Checker (Citizen Portal)</option>
+                  <option value="investigator">Forensic Analyst (Investigator Lab)</option>
+                  <option value="admin">Chief Editor / Administrator (Admin Console)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Password Input with Strength Indicator -->
+            <div class="mb-3">
+              <label for="password" class="form-label tl-input-label">Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                  <i class="bi bi-lock"></i>
+                </span>
+                <input 
+                  type="password" 
+                  class="form-control border-start-0 border-end-0" 
+                  id="password" 
+                  name="password" 
+                  placeholder="Create secure password" 
+                  required 
+                  minlength="8"
+                  autocomplete="new-password"
+                  aria-describedby="passwordFeedback">
+                <button 
+                  type="button" 
+                  class="btn btn-light border border-start-0 text-muted tl-password-toggle" 
+                  id="togglePassword" 
+                  aria-label="Toggle password visibility">
+                  <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                </button>
+                <div id="passwordFeedback" class="invalid-feedback">
+                  Password must contain at least 8 characters.
+                </div>
+              </div>
+              
+              <!-- Real-time Password Strength Meter -->
+              <div class="mt-2">
+                <div class="progress tl-progress-sm mb-1" style="height: 4px;">
+                  <div id="passwordStrengthBar" class="progress-bar bg-danger" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                  <span id="passwordStrengthText" class="tl-micro text-muted">Strength: Too short</span>
+                  <span class="tl-micro text-muted">Min. 8 chars, mix of case & symbols</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Confirm Password Input -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label tl-input-label">Confirm Password</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light border-end-0 text-muted">
+                  <i class="bi bi-lock-fill"></i>
+                </span>
+                <input 
+                  type="password" 
+                  class="form-control border-start-0" 
+                  id="confirmPassword" 
+                  name="confirm_password" 
+                  placeholder="Re-enter password" 
+                  required 
+                  autocomplete="new-password"
+                  aria-describedby="confirmPasswordFeedback">
+                <div id="confirmPasswordFeedback" class="invalid-feedback">
+                  Passwords do not match. Please verify.
+                </div>
+              </div>
+            </div>
+
+            <!-- Terms and Conditions Checkbox -->
+            <div class="mb-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="termsCheck" name="terms_agreed" required>
+                <label class="form-check-label text-secondary tl-small" for="termsCheck">
+                  I agree to adhere to the <span class="fw-semibold text-dark">TruthLens Ethical Research Standards</span> and data citation guidelines.
+                </label>
+                <div class="invalid-feedback">
+                  You must agree to the research standards to register.
+                </div>
+              </div>
+            </div>
+
+            <!-- Primary Submission Button with Loading Spinner -->
+            <button type="submit" class="btn btn-tl-primary w-100 py-2 mb-3 d-flex align-items-center justify-content-center gap-2" id="registerSubmitBtn">
+              <span class="spinner-border spinner-border-sm d-none" id="registerSpinner" role="status" aria-hidden="true"></span>
+              <span id="registerBtnText">Register Investigator Account</span>
+            </button>
+
+            <!-- Navigation Link to Login -->
+            <div class="text-center pt-2">
+              <p class="text-secondary tl-small mb-0">
+                Already hold investigator credentials? 
+                <a href="login.html" class="fw-semibold text-decoration-none tl-auth-link">Sign In Instead</a>
+              </p>
+            </div>
+          </form>
+
+          <!-- System Academic Notice -->
+          <div class="mt-4 pt-3 border-top text-center">
+            <p class="tl-micro text-muted mb-0">
+              TruthLens Workspace Security &bull; Client-side validation protects your session records.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Application Shell Scripts -->
+  <script src="js/main.js"></script>
+
+  <!-- Authentication Controller Script -->
+  <script src="js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin &amp; Editorial Console — TruthLens</title>
+  <meta name="description" content="TruthLens Chief Editor &amp; Administrator Governance Console. Manage claims queue, investigator roles, and database integrity.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Specific Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION (Admin View) -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon bg-dark text-white">
+            <i class="bi bi-shield-lock-fill"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action: Database Seeder / Seed Trigger in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <button type="button" class="btn btn-dark w-100 d-flex align-items-center justify-content-center gap-2 shadow-sm" id="btnSidebarQuickSeed">
+          <i class="bi bi-database-fill-gear"></i>
+          <span>Seed / Reset Database</span>
+        </button>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <div class="tl-sidebar-label px-3 mb-2 text-muted">Editorial Oversight</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link active" href="admin-dashboard.html">
+              <i class="bi bi-speedometer2"></i>
+              <span>Admin Console</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#claimsReviewSection">
+              <i class="bi bi-inbox-fill"></i>
+              <span>Claims Ingestion Queue</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#usersDirectorySection">
+              <i class="bi bi-people-fill"></i>
+              <span>User &amp; Role Directory</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#dbToolsSection">
+              <i class="bi bi-hdd-network-fill"></i>
+              <span>Database Health &amp; Sync</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2 text-muted">Investigator Workspaces</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Investigator Lab</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="user-dashboard.html">
+              <i class="bi bi-person-heart"></i>
+              <span>Citizen Portal</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>All Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>System Audit Timeline</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2 text-muted">Settings &amp; Session</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Platform Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" id="btnLogoutTrigger">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Sign Out</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Mini Bio in Sidebar Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" id="sidebarUserAvatar" style="width:36px;height:36px;">
+            <span class="fw-bold" style="font-size:0.8rem;">PM</span>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark" id="sidebarUserName">Puja Mohapatra</div>
+            <div class="tl-micro text-muted text-truncate" id="sidebarUserRole"><span class="badge bg-dark text-white py-0 px-1">Chief Editor &bull; Admin</span></div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. MAIN WRAPPER: Topbar + Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- Topbar -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <!-- Left: Hamburger & Breadcrumbs -->
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <div class="d-none d-sm-block">
+              <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0 tl-small">
+                  <li class="breadcrumb-item"><a href="index.html" class="text-decoration-none text-muted">TruthLens</a></li>
+                  <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Admin Governance Console</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+
+          <!-- Center: Search Filter -->
+          <div class="tl-topbar-search d-none d-md-block flex-grow-1 mx-4" style="max-width: 440px;">
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-search"></i></span>
+              <input type="search" class="form-control border-start-0" id="adminGlobalSearch" placeholder="Search users, pending claims, cases, or audit records..." aria-label="Search Console">
+            </div>
+          </div>
+
+          <!-- Right: Actions & Profile -->
+          <div class="d-flex align-items-center gap-2">
+            
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Notifications Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light tl-btn-icon position-relative" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="View notifications">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                  <span class="visually-hidden">Pending items</span>
+                </span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2 tl-notif-menu" aria-labelledby="notifDropdown">
+                <li class="dropdown-header d-flex justify-content-between align-items-center pb-2 border-bottom">
+                  <span class="fw-semibold">Editorial Triage Alerts</span>
+                  <span class="badge bg-danger-subtle text-danger" id="notifClaimsCount">1 Pending Claim</span>
+                </li>
+                <li>
+                  <a class="dropdown-item py-2 tl-small" href="#claimsReviewSection">
+                    <div class="fw-semibold text-dark">EU Pet Microchip Mandate</div>
+                    <div class="text-muted tl-micro">Submitted by Elena Rostova &bull; High Priority</div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs bg-dark text-white rounded-circle d-flex align-items-center justify-content-center" id="topbarUserAvatar" style="width:28px;height:28px;">
+                  <span class="fw-bold" style="font-size:0.7rem;">PM</span>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark" id="topbarUserName">Puja Mohapatra</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li class="px-2 py-1">
+                  <div class="fw-semibold text-dark tl-small" id="dropdownUserName">Puja Mohapatra</div>
+                  <div class="text-muted tl-micro" id="dropdownUserEmail">admin@truthlens.org</div>
+                  <span class="badge bg-dark text-white mt-1 tl-micro" id="dropdownUserRole">Chief Editor &bull; Admin</span>
+                </li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile Details</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-sliders me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" onclick="if(confirm('Sign out?')){TruthLensDB.clearSession(); window.location.href='login.html';} return false;"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+
+          </div>
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Welcome Hero Banner -->
+        <div class="card border-0 bg-dark text-white rounded-4 p-4 mb-4 position-relative overflow-hidden shadow-sm">
+          <div class="row align-items-center">
+            <div class="col-lg-8">
+              <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-white bg-opacity-10 text-white tl-micro text-uppercase fw-bold mb-2 border border-white border-opacity-10">
+                <i class="bi bi-shield-lock-fill text-warning"></i> Chief Editor &amp; Administrator Console
+              </div>
+              <h1 class="tl-h1 text-white mb-2">Welcome, <span id="adminWelcomeName">Puja Mohapatra</span></h1>
+              <p class="text-white-50 tl-body mb-3 pe-lg-4">
+                You have administrative authority over editorial triage, investigator role permissions, citizen claim conversions, and Cloud Firestore synchronization.
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <a href="#claimsReviewSection" class="btn btn-light d-flex align-items-center gap-2">
+                  <i class="bi bi-inbox-fill text-dark"></i> Review Citizen Claims Queue
+                </a>
+                <button type="button" class="btn btn-outline-light d-flex align-items-center gap-2" id="btnHeroSeedDb">
+                  <i class="bi bi-database-fill-gear text-warning"></i> Run Database Seeder
+                </button>
+              </div>
+            </div>
+            <div class="col-lg-4 d-none d-lg-block text-end pe-4">
+              <div class="display-1 text-white opacity-25">
+                <i class="bi bi-shield-shaded"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Pending Claims</span>
+                  <div class="tl-stat-icon bg-warning-subtle text-warning-emphasis rounded-circle p-2">
+                    <i class="bi bi-inbox"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statPendingClaimsCount">0</div>
+                <div class="tl-micro text-warning-emphasis fw-semibold">
+                  <i class="bi bi-exclamation-circle me-1"></i>Awaiting editorial approval
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Registered Staff</span>
+                  <div class="tl-stat-icon bg-primary-subtle text-primary rounded-circle p-2">
+                    <i class="bi bi-people"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statTotalUsersCount">3</div>
+                <div class="tl-micro text-muted">Analysts &amp; Contributors</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Active Inquests</span>
+                  <div class="tl-stat-icon bg-success-subtle text-success rounded-circle p-2">
+                    <i class="bi bi-folder-check"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statActiveInquestsCount">3</div>
+                <div class="tl-micro text-success fw-semibold"><i class="bi bi-check-all"></i> Published verdicts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-6 col-lg-3">
+            <div class="card border shadow-sm h-100 rounded-3">
+              <div class="card-body p-3">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                  <span class="text-muted tl-small">Database Mode</span>
+                  <div class="tl-stat-icon bg-info-subtle text-info rounded-circle p-2">
+                    <i class="bi bi-cloud-arrow-up"></i>
+                  </div>
+                </div>
+                <div class="h3 fw-bold mb-1 text-dark" id="statDbEngineMode">Live DB</div>
+                <div class="tl-micro text-muted" id="statDbSyncSubtext">Firestore sync active</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 1: Citizen Claims Review & Triage Queue -->
+        <section class="card border shadow-sm rounded-3 mb-4" id="claimsReviewSection">
+          <div class="card-header bg-white border-bottom py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+              <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-inbox-fill text-warning"></i> Public Claims Ingestion Queue
+              </h2>
+              <p class="text-secondary tl-micro mb-0">Review claims submitted by community members. Approve to convert into an active forensic case assigned to an analyst.</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary" id="btnRefreshAdminClaims">
+                <i class="bi bi-arrow-clockwise"></i> Refresh Queue
+              </button>
+            </div>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 tl-table">
+                <thead class="table-light tl-table-head">
+                  <tr>
+                    <th scope="col" style="width: 100px;">Claim ID</th>
+                    <th scope="col">Asserted Headline &amp; Source</th>
+                    <th scope="col" style="width: 140px;">Submitted By</th>
+                    <th scope="col" style="width: 110px;">Category</th>
+                    <th scope="col" style="width: 140px;">ML Prediction</th>
+                    <th scope="col" style="width: 90px;">Priority</th>
+                    <th scope="col" style="width: 110px;">Status</th>
+                    <th scope="col" style="width: 200px;" class="text-end">Editorial Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="adminClaimsTableBody">
+                  <tr>
+                    <td colspan="8" class="text-center py-4 text-muted">
+                      <span class="spinner-border spinner-border-sm me-2"></span> Loading claims queue...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 2: User & Role Directory -->
+        <section class="card border shadow-sm rounded-3 mb-4" id="usersDirectorySection">
+          <div class="card-header bg-white border-bottom py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">
+            <div>
+              <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill text-primary"></i> User &amp; Role Management Directory
+              </h2>
+              <p class="text-secondary tl-micro mb-0">Promote or demote user roles, manage analyst account permissions, and configure department access.</p>
+            </div>
+            <button type="button" class="btn btn-sm btn-tl-primary d-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#addUserModal">
+              <i class="bi bi-person-plus-fill"></i> Add Team Member
+            </button>
+          </div>
+
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0 tl-table">
+                <thead class="table-light tl-table-head">
+                  <tr>
+                    <th scope="col" style="width: 80px;">User</th>
+                    <th scope="col">Name &amp; Email</th>
+                    <th scope="col" style="width: 180px;">Department</th>
+                    <th scope="col" style="width: 180px;">System Role</th>
+                    <th scope="col" style="width: 120px;">Status</th>
+                    <th scope="col" style="width: 140px;" class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="adminUsersTableBody">
+                  <tr>
+                    <td colspan="6" class="text-center py-4 text-muted">
+                      <span class="spinner-border spinner-border-sm me-2"></span> Loading user directory...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION 3: Database Health Diagnostics & Seeder -->
+        <section class="card border shadow-sm rounded-3 mb-4" id="dbToolsSection">
+          <div class="card-header bg-white border-bottom py-3">
+            <h2 class="tl-h2 mb-0 d-flex align-items-center gap-2">
+              <i class="bi bi-hdd-network-fill text-success"></i> Database Health &amp; Synchronization Center
+            </h2>
+            <p class="text-secondary tl-micro mb-0">Direct Firestore Cloud Diagnostic and 1-Click Database Reset/Seeder.</p>
+          </div>
+
+          <div class="card-body p-4">
+            <div class="row g-4">
+              <!-- Diagnostics Panel -->
+              <div class="col-lg-6">
+                <h5 class="tl-h3 mb-3">Database Connection Diagnostics</h5>
+                <div class="list-group list-group-flush border rounded-3 p-2 bg-light-subtle tl-small">
+                  <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted">Cloud Provider</span>
+                    <span class="fw-semibold text-dark"><i class="bi bi-google text-danger me-1"></i> Google Cloud Firestore</span>
+                  </div>
+                  <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted">Project ID</span>
+                    <code class="fw-bold text-dark" id="diagProjectId">truthlens-65573</code>
+                  </div>
+                  <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted">Offline Cache Persistence</span>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle">IndexedDB Enabled</span>
+                  </div>
+                  <div class="list-group-item bg-transparent d-flex justify-content-between align-items-center py-2">
+                    <span class="text-muted">Database Collections</span>
+                    <span class="text-dark fw-semibold">investigations, evidence, notes, users, submitted_claims</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seeder & Reset Actions -->
+              <div class="col-lg-6">
+                <h5 class="tl-h3 mb-3">System Data Actions</h5>
+                <div class="p-3 border rounded-3 bg-light">
+                  <h6 class="fw-bold text-dark mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-arrow-repeat text-primary"></i> 1-Click Database Seeder
+                  </h6>
+                  <p class="tl-micro text-secondary mb-3">
+                    Populates the database with realistic journalistic cases (James Webb Space Telescope, AI Flash Crash, Alkaline Water Health assertion), evidence entries, notes, and 3 role profiles.
+                  </p>
+                  <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-tl-primary d-flex align-items-center gap-2" id="btnRunSeedDb">
+                      <i class="bi bi-database-fill-check"></i>
+                      <span>Seed Database Now</span>
+                    </button>
+                    <button type="button" class="btn btn-outline-secondary bg-white d-flex align-items-center gap-2" id="btnExportDbJson">
+                      <i class="bi bi-download"></i>
+                      <span>Export Database JSON</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: Add New Team Member -->
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border">
+        <form id="addUserForm">
+          <div class="modal-header border-bottom">
+            <h5 class="modal-title tl-h3" id="addUserModalLabel">Add Staff Member</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <div class="mb-3">
+              <label for="newUserName" class="form-label tl-input-label">Full Name</label>
+              <input type="text" class="form-control" id="newUserName" required placeholder="e.g. Dr. Maya Lin, Ph.D.">
+            </div>
+            <div class="mb-3">
+              <label for="newUserEmail" class="form-label tl-input-label">Email Address</label>
+              <input type="email" class="form-control" id="newUserEmail" required placeholder="maya.lin@truthlens.org">
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label for="newUserRole" class="form-label tl-input-label">Role</label>
+                <select class="form-select" id="newUserRole">
+                  <option value="investigator" selected>Investigator</option>
+                  <option value="admin">Administrator</option>
+                  <option value="user">Citizen Contributor</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <label for="newUserDept" class="form-label tl-input-label">Department</label>
+                <input type="text" class="form-control" id="newUserDept" placeholder="e.g. OSINT &amp; Forensics" value="Digital Forensics">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top p-2">
+            <button type="button" class="btn btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-tl-primary" id="btnSaveNewUser">Save User</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: Convert Claim to Investigation -->
+  <div class="modal fade" id="convertClaimModal" tabindex="-1" aria-labelledby="convertClaimModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border">
+        <form id="convertClaimForm">
+          <div class="modal-header border-bottom">
+            <h5 class="modal-title tl-h3" id="convertClaimModalLabel">Convert Claim to Forensic Inquest</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body p-4">
+            <input type="hidden" id="convertClaimId">
+            <div class="mb-3">
+              <label class="form-label tl-input-label">Claim Asserted</label>
+              <p class="p-2 bg-light rounded text-dark tl-small mb-0" id="convertClaimText"></p>
+            </div>
+            <div class="mb-3">
+              <label for="convertCaseTitle" class="form-label tl-input-label">Investigation Dossier Title</label>
+              <input type="text" class="form-control" id="convertCaseTitle" required placeholder="e.g. EU Pet Microchip Mandate Allegation">
+            </div>
+            <div class="mb-3">
+              <label for="convertAssignee" class="form-label tl-input-label">Assign Lead Analyst</label>
+              <select class="form-select" id="convertAssignee">
+                <option value="investigator@truthlens.org" selected>Abinash Panigrahy (Senior Analyst)</option>
+                <option value="admin@truthlens.org">Puja Mohapatra (Chief Editor)</option>
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer border-top p-2">
+            <button type="button" class="btn btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-tl-primary d-flex align-items-center gap-1" id="btnConfirmConvert">
+              <i class="bi bi-folder-plus"></i> Initialize Investigation Case
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <!-- Machine Learning Veracity Engine -->
+  <script src="js/ml-model.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Admin Console Controller -->
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      'use strict';
+
+      // Ensure active session
+      let session = TruthLensDB.getCurrentSession();
+      if (!session) {
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const adminWelcomeName = document.getElementById('adminWelcomeName');
+      if (adminWelcomeName) adminWelcomeName.textContent = session.name;
+
+      const adminClaimsTableBody = document.getElementById('adminClaimsTableBody');
+      const adminUsersTableBody = document.getElementById('adminUsersTableBody');
+      const statPendingClaims = document.getElementById('statPendingClaimsCount');
+      const statTotalUsers = document.getElementById('statTotalUsersCount');
+      const statActiveInquests = document.getElementById('statActiveInquestsCount');
+
+      // 1. Render Claims Ingestion Queue
+      const loadAdminClaims = async () => {
+        try {
+          const claims = await TruthLensDB.getSubmittedClaims();
+          const pendingCount = claims.filter(c => c.status === 'Under Review').length;
+          if (statPendingClaims) statPendingClaims.textContent = pendingCount;
+          
+          const notifCount = document.getElementById('notifClaimsCount');
+          if (notifCount) notifCount.textContent = `${pendingCount} Pending Claim${pendingCount !== 1 ? 's' : ''}`;
+
+          if (!claims || claims.length === 0) {
+            adminClaimsTableBody.innerHTML = `
+              <tr>
+                <td colspan="8" class="text-center py-4 text-muted">
+                  <i class="bi bi-inbox fs-4 d-block mb-1"></i>
+                  No claims currently in verification queue.
+                </td>
+              </tr>
+            `;
+            return;
+          }
+
+          adminClaimsTableBody.innerHTML = claims.map(c => {
+            let statusBadge = '';
+            if (c.status === 'Approved') {
+              statusBadge = '<span class="badge bg-primary-subtle text-primary border border-primary-subtle">Approved</span>';
+            } else if (c.status === 'Rejected') {
+              statusBadge = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle">Rejected</span>';
+            } else {
+              statusBadge = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle">Under Review</span>';
+            }
+
+            let fakePct = typeof c.fakeProbability === 'number' ? c.fakeProbability : null;
+            let mlVerdict = c.mlVerdict || null;
+            if (fakePct === null && window.TruthLensML) {
+              const res = window.TruthLensML.predict(c.claimText || '', c.sourceUrl || '');
+              fakePct = res.fakeProbability;
+              mlVerdict = res.verdict;
+            }
+            if (fakePct === null) fakePct = 50;
+
+            const mlBadgeClass = fakePct >= 70 ? 'bg-danger-subtle text-danger border border-danger-subtle' :
+                                 (fakePct <= 35 ? 'bg-success-subtle text-success border border-success-subtle' :
+                                 'bg-warning-subtle text-warning-emphasis border border-warning-subtle');
+            const mlDisplayVerdict = mlVerdict || (fakePct >= 70 ? 'Likely Fake' : (fakePct <= 35 ? 'Authentic' : 'Questionable'));
+
+            return `
+              <tr>
+                <td><span class="badge bg-light text-dark border font-monospace">${c.id}</span></td>
+                <td>
+                  <div class="fw-semibold text-dark tl-small line-clamp-2">${c.claimText}</div>
+                  <div class="tl-micro text-muted">
+                    <a href="${c.sourceUrl}" target="_blank" rel="noopener" class="text-decoration-none text-primary">
+                      <i class="bi bi-box-arrow-up-right me-1"></i>${c.sourceUrl.length > 35 ? c.sourceUrl.substring(0, 35) + '...' : c.sourceUrl}
+                    </a>
+                  </div>
+                </td>
+                <td>
+                  <div class="tl-small fw-semibold text-dark">${c.submittedByName || 'Elena Rostova'}</div>
+                  <div class="tl-micro text-muted">${c.submittedBy || 'Citizen'}</div>
+                </td>
+                <td><span class="badge bg-light text-secondary border">${c.category || 'General'}</span></td>
+                <td>
+                  <span class="badge ${mlBadgeClass} font-monospace d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-robot"></i> ${fakePct}% Fake
+                  </span>
+                  <div class="tl-micro text-muted">${mlDisplayVerdict}</div>
+                </td>
+                <td>
+                  ${c.priority === 'High' ? '<span class="badge bg-danger text-white">High</span>' : '<span class="badge bg-light text-dark border">Standard</span>'}
+                </td>
+                <td>${statusBadge}</td>
+                <td class="text-end">
+                  ${c.status === 'Under Review' ? `
+                    <button type="button" class="btn btn-sm btn-tl-primary p-1 px-2 approve-claim-btn" data-id="${c.id}" data-text="${c.claimText.replace(/"/g, '&quot;')}" data-fake-pct="${fakePct}" data-ml-verdict="${mlDisplayVerdict}" title="Convert to Case">
+                      <i class="bi bi-check-lg me-1"></i>Approve
+                    </button>
+                    <button type="button" class="btn btn-sm btn-outline-danger p-1 px-2 reject-claim-btn ms-1" data-id="${c.id}" title="Reject Claim">
+                      <i class="bi bi-x-lg"></i>
+                    </button>
+                  ` : `
+                    <span class="text-muted tl-micro">Triage complete</span>
+                    <button type="button" class="btn btn-sm btn-light border p-1 px-2 delete-claim-btn ms-1" data-id="${c.id}" title="Remove record">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  `}
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Wire Approve Buttons
+          document.querySelectorAll('.approve-claim-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+              const claimId = btn.getAttribute('data-id');
+              const claimText = btn.getAttribute('data-text');
+              const fakePct = btn.getAttribute('data-fake-pct') || '50';
+              const mlVerdict = btn.getAttribute('data-ml-verdict') || 'Questionable';
+              const idInput = document.getElementById('convertClaimId');
+              idInput.value = claimId;
+              idInput.setAttribute('data-fake-pct', fakePct);
+              idInput.setAttribute('data-ml-verdict', mlVerdict);
+              document.getElementById('convertClaimText').textContent = claimText;
+              document.getElementById('convertCaseTitle').value = 'Inquest: ' + (claimText.length > 50 ? claimText.substring(0, 50) + '...' : claimText);
+
+              const modal = new bootstrap.Modal(document.getElementById('convertClaimModal'));
+              modal.show();
+            });
+          });
+
+          // Wire Reject Buttons
+          document.querySelectorAll('.reject-claim-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const claimId = btn.getAttribute('data-id');
+              if (confirm(`Reject claim #${claimId}?`)) {
+                await TruthLensDB.updateClaimStatus(claimId, 'Rejected');
+                window.showToast(`Claim #${claimId} marked as Rejected.`, 'info');
+                await loadAdminClaims();
+              }
+            });
+          });
+
+          // Wire Delete Buttons
+          document.querySelectorAll('.delete-claim-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const claimId = btn.getAttribute('data-id');
+              if (confirm(`Remove record #${claimId} from queue?`)) {
+                await TruthLensDB.deleteSubmittedClaim(claimId);
+                window.showToast(`Claim #${claimId} removed.`, 'info');
+                await loadAdminClaims();
+              }
+            });
+          });
+
+        } catch (err) {
+          console.error('[Admin Console] Error loading claims:', err);
+          adminClaimsTableBody.innerHTML = `<tr><td colspan="7" class="text-center text-danger py-4">${err.message}</td></tr>`;
+        }
+      };
+
+      // 2. Render Users Directory Table
+      const loadAdminUsers = async () => {
+        try {
+          const users = await TruthLensDB.getUsers();
+          if (statTotalUsers) statTotalUsers.textContent = users.length;
+
+          if (!users || users.length === 0) {
+            adminUsersTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-muted">No users found.</td></tr>`;
+            return;
+          }
+
+          adminUsersTableBody.innerHTML = users.map(u => {
+            const roleBadgeClass = u.role === 'admin' ? 'bg-dark' : u.role === 'user' ? 'bg-success' : 'bg-primary';
+            const statusClass = u.status === 'Active' ? 'text-success' : 'text-danger';
+
+            return `
+              <tr>
+                <td>
+                  <div class="tl-avatar-sm ${roleBadgeClass} text-white rounded-circle d-flex align-items-center justify-content-center" style="width:34px;height:34px;">
+                    <span class="fw-bold" style="font-size:0.75rem;">${u.avatar || 'TL'}</span>
+                  </div>
+                </td>
+                <td>
+                  <div class="fw-semibold text-dark tl-small">${u.name}</div>
+                  <div class="tl-micro text-muted">${u.email}</div>
+                </td>
+                <td class="tl-small text-secondary">${u.department || 'Fact-Checking'}</td>
+                <td>
+                  <select class="form-select form-select-sm role-change-select" data-user-id="${u.id}" style="width: 140px;">
+                    <option value="admin" ${u.role === 'admin' ? 'selected' : ''}>Administrator</option>
+                    <option value="investigator" ${u.role === 'investigator' ? 'selected' : ''}>Investigator</option>
+                    <option value="user" ${u.role === 'user' ? 'selected' : ''}>Citizen User</option>
+                  </select>
+                </td>
+                <td>
+                  <span class="tl-small fw-semibold ${statusClass} d-inline-flex align-items-center gap-1">
+                    <span class="status-dot rounded-circle ${u.status === 'Active' ? 'bg-success' : 'bg-danger'}" style="width:7px;height:7px;display:inline-block;"></span>
+                    ${u.status || 'Active'}
+                  </span>
+                </td>
+                <td class="text-end">
+                  <button type="button" class="btn btn-sm btn-light border toggle-status-btn p-1 px-2" data-user-id="${u.id}" data-current="${u.status || 'Active'}" title="Toggle Active / Suspended">
+                    <i class="bi bi-power"></i>
+                  </button>
+                </td>
+              </tr>
+            `;
+          }).join('');
+
+          // Wire Role Change Selectors
+          document.querySelectorAll('.role-change-select').forEach(sel => {
+            sel.addEventListener('change', async (e) => {
+              const userId = sel.getAttribute('data-user-id');
+              const newRole = e.target.value;
+              await TruthLensDB.updateUserRole(userId, newRole);
+              window.showToast(`User role updated to ${newRole}!`, 'success');
+              await loadAdminUsers();
+            });
+          });
+
+          // Wire Status Toggle Buttons
+          document.querySelectorAll('.toggle-status-btn').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              const userId = btn.getAttribute('data-user-id');
+              const currentStatus = btn.getAttribute('data-current');
+              const nextStatus = currentStatus === 'Active' ? 'Suspended' : 'Active';
+              await TruthLensDB.updateUserStatus(userId, nextStatus);
+              window.showToast(`User marked as ${nextStatus}.`, 'info');
+              await loadAdminUsers();
+            });
+          });
+
+        } catch (err) {
+          console.error('[Admin Console] Error loading users:', err);
+          adminUsersTableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger py-4">${err.message}</td></tr>`;
+        }
+      };
+
+      // 3. Load Inquest stats
+      const loadInquestStats = async () => {
+        try {
+          const invs = await TruthLensDB.getInvestigations();
+          if (statActiveInquests) statActiveInquests.textContent = invs.length;
+        } catch (err) {
+          console.warn('[Admin Console] Inquests load note:', err.message);
+        }
+      };
+
+      // 4. Form Submit: Convert Claim to Investigation
+      const convertClaimForm = document.getElementById('convertClaimForm');
+      if (convertClaimForm) {
+        convertClaimForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const idInput = document.getElementById('convertClaimId');
+          const claimId = idInput.value;
+          const fakePct = parseInt(idInput.getAttribute('data-fake-pct') || '50', 10);
+          const mlVerdict = idInput.getAttribute('data-ml-verdict') || 'Under Investigation';
+          const claimText = document.getElementById('convertClaimText').textContent;
+          const caseTitle = document.getElementById('convertCaseTitle').value.trim();
+          const assignee = document.getElementById('convertAssignee').value;
+          const btn = document.getElementById('btnConfirmConvert');
+
+          btn.disabled = true;
+          btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Initializing Case...';
+
+          try {
+            // Predict with ML model if available
+            let mlPred = null;
+            if (window.TruthLensML) {
+              mlPred = window.TruthLensML.predict(claimText);
+            }
+
+            // Create a new investigation in TruthLensDB
+            const newInv = await TruthLensDB.createInvestigation({
+              title: caseTitle,
+              claim: claimText,
+              category: 'Public Policy',
+              status: 'In Progress',
+              verdict: mlVerdict || 'Under Investigation',
+              fakeProbability: fakePct,
+              mlVerdict: mlVerdict,
+              mlPrediction: mlPred,
+              confidenceScore: Math.max(15, 100 - fakePct),
+              summary: `Automated ML Model assessment: ${fakePct}% Fake News Probability (${mlVerdict}). Forensic inquest initiated from citizen claim ${claimId}. Assigned to ${assignee}.`,
+              leadAnalyst: assignee
+            });
+
+            // Mark claim as Approved
+            await TruthLensDB.updateClaimStatus(claimId, 'Approved', { assignedCaseId: newInv.id });
+
+            // Close modal
+            const bsModal = bootstrap.Modal.getInstance(document.getElementById('convertClaimModal'));
+            if (bsModal) bsModal.hide();
+
+            window.showToast(`Claim #${claimId} approved! Investigation #${newInv.id} initialized and assigned.`, 'success');
+
+            await loadAdminClaims();
+            await loadInquestStats();
+
+          } catch (err) {
+            console.error('[Admin Console] Error converting claim:', err);
+            alert(`Error: ${err.message}`);
+          } finally {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-folder-plus"></i> Initialize Investigation Case';
+          }
+        });
+      }
+
+      // 5. Add User Form
+      const addUserForm = document.getElementById('addUserForm');
+      if (addUserForm) {
+        addUserForm.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const name = document.getElementById('newUserName').value.trim();
+          const email = document.getElementById('newUserEmail').value.trim();
+          const role = document.getElementById('newUserRole').value;
+          const dept = document.getElementById('newUserDept').value.trim();
+
+          const newUser = {
+            id: 'usr-' + Date.now(),
+            name,
+            email,
+            role,
+            department: dept,
+            avatar: name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'TL',
+            status: 'Active',
+            joinedDate: new Date().toISOString().split('T')[0]
+          };
+
+          await TruthLensDB.createUser(newUser);
+
+          const bsModal = bootstrap.Modal.getInstance(document.getElementById('addUserModal'));
+          if (bsModal) bsModal.hide();
+          addUserForm.reset();
+
+          window.showToast(`User ${name} added successfully!`, 'success');
+          await loadAdminUsers();
+        });
+      }
+
+      // 6. Database Seeder Trigger
+      const runSeed = async () => {
+        if (!confirm('This will seed/reset the database with the verified default investigations, evidence entries, field notes, users, and citizen claims. Continue?')) {
+          return;
+        }
+
+        try {
+          const res = await TruthLensDB.seedDatabase();
+          window.showToast(`Database Seeder Succeeded! Initialized ${res.count} records.`, 'success');
+          await loadAdminClaims();
+          await loadAdminUsers();
+          await loadInquestStats();
+        } catch (err) {
+          console.error('[Admin Console] Seeding error:', err);
+          alert(`Seeding failed: ${err.message}`);
+        }
+      };
+
+      const btnRunSeed = document.getElementById('btnRunSeedDb');
+      const btnHeroSeed = document.getElementById('btnHeroSeedDb');
+      const btnSidebarSeed = document.getElementById('btnSidebarQuickSeed');
+      if (btnRunSeed) btnRunSeed.addEventListener('click', runSeed);
+      if (btnHeroSeed) btnHeroSeed.addEventListener('click', runSeed);
+      if (btnSidebarSeed) btnSidebarSeed.addEventListener('click', runSeed);
+
+      // 7. Export Database JSON
+      const btnExport = document.getElementById('btnExportDbJson');
+      if (btnExport) {
+        btnExport.addEventListener('click', async () => {
+          try {
+            const data = {
+              timestamp: new Date().toISOString(),
+              investigations: await TruthLensDB.getInvestigations(),
+              users: await TruthLensDB.getUsers(),
+              claims: await TruthLensDB.getSubmittedClaims()
+            };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `truthlens-database-backup-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            window.showToast('Database JSON backup downloaded.', 'info');
+          } catch (err) {
+            alert('Export failed: ' + err.message);
+          }
+        });
+      }
+
+      const btnRefreshClaims = document.getElementById('btnRefreshAdminClaims');
+      if (btnRefreshClaims) {
+        btnRefreshClaims.addEventListener('click', async () => {
+          btnRefreshClaims.disabled = true;
+          await loadAdminClaims();
+          btnRefreshClaims.disabled = false;
+        });
+      }
+
+      // Initial loads
+      await loadAdminClaims();
+      await loadAdminUsers();
+      await loadInquestStats();
+    });
+  </script>
+</body>
+</html>

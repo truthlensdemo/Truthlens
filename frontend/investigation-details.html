@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case #TL-8429: AI Developer Replacement — TruthLens Workspace</title>
+  <meta name="description" content="Detailed investigation workspace, evidence classification, and chronology dossier in TruthLens.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core Design System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Shell Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Investigation Workspace Stylesheet -->
+  <link rel="stylesheet" href="css/investigation.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Mini Bio in Sidebar Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark">Abinash Panigrahy</div>
+            <div class="tl-micro text-muted text-truncate">Senior Fact-Checker</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0 tl-small">
+                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                <li class="breadcrumb-item"><a href="investigations.html" class="text-decoration-none text-muted">Investigations</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Case #TL-8429</li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+              <button class="btn btn-light tl-btn-icon position-relative" type="button" id="notifDropdown" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle">
+                  <span class="visually-hidden">Alerts</span>
+                </span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2 tl-notif-menu" aria-labelledby="notifDropdown">
+                <li class="dropdown-header pb-2 border-bottom fw-semibold">Case Alerts</li>
+                <li>
+                  <a class="dropdown-item py-2 tl-small" href="timeline.html">
+                    <div class="fw-semibold text-dark">New contradiction mapped</div>
+                    <div class="text-muted tl-micro">Bureau of Labor Statistics report attached</div>
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark">Abinash Panigrahy</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- CASE HEADER DOSSIER HERO -->
+        <div class="tl-card p-3 p-md-4 mb-4 border-start-primary">
+          <div class="row g-3 align-items-start justify-content-between">
+            
+            <div class="col-xl-8">
+              <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                <span class="tl-badge tl-badge-active" id="detailsStatusBadge"><i class="bi bi-clock-history me-1"></i>Active Investigation</span>
+                <span class="tl-badge tl-priority-critical" id="detailsPriorityBadge"><i class="bi bi-exclamation-circle-fill me-1"></i>Critical Priority</span>
+                <span class="badge bg-light text-dark border fw-normal tl-small" id="detailsCategoryBadge">Artificial Intelligence</span>
+                <span class="text-muted tl-micro ms-1">Case ID: <strong id="detailsCaseIdBadge">#TL-8429</strong></span>
+                <span id="detailsMlBadge" class="badge bg-danger-subtle text-danger border border-danger-subtle font-monospace d-none">
+                  <i class="bi bi-robot"></i> <span id="detailsMlPct">--%</span> Fake
+                </span>
+              </div>
+
+              <!-- Title -->
+              <h1 class="tl-h1 mb-2" id="detailsCaseTitle">Autonomous Agent Labor Replacement for Entry & Senior Software Developers</h1>
+              
+              <!-- Target Claim Callout -->
+              <div class="tl-claim-box p-3 rounded-2 mb-3 bg-light">
+                <div class="tl-label text-muted mb-1"><i class="bi bi-quote fs-6 me-1"></i>Target Proposition Under Falsification Testing</div>
+                <div class="fw-semibold text-dark fs-6" id="detailsClaimText">
+                  "Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years."
+                </div>
+              </div>
+
+              <!-- Metadata Meta Grid -->
+              <div class="d-flex flex-wrap align-items-center gap-4 text-muted tl-small">
+                <div><i class="bi bi-calendar-plus me-1"></i> Initiated: <span class="text-dark fw-medium" id="detailsInitiatedDate">Aug 24, 2026</span></div>
+                <div><i class="bi bi-clock-history me-1"></i> Last Audit: <span class="text-dark fw-medium" id="detailsLastAuditDate">Today, 14:15 IST</span></div>
+                <div><i class="bi bi-person-check me-1"></i> Lead Investigator: <span class="text-dark fw-medium" id="detailsLeadInvestigator">Abinash Panigrahy</span></div>
+              </div>
+            </div>
+
+            <!-- Header Action Controls -->
+            <div class="col-xl-4 d-flex flex-column align-items-xl-end gap-2">
+              <div class="d-flex flex-wrap gap-2">
+                <a href="add-evidence.html?case=TL-8429" id="detailsHeaderAddEvidenceBtn" class="btn btn-tl-primary btn-sm d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-file-earmark-plus"></i>
+                  <span>Add Evidence</span>
+                </a>
+                <button type="button" class="btn btn-tl-secondary btn-sm d-inline-flex align-items-center gap-1" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                  <i class="bi bi-sticky"></i>
+                  <span>Add Note</span>
+                </button>
+              </div>
+              <div class="d-flex flex-wrap gap-2 mt-1">
+                <a href="create-investigation.html?edit=TL-8429" id="detailsHeaderUpdateCaseBtn" class="btn btn-tl-outline btn-sm d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-pencil-square"></i>
+                  <span>Update Case</span>
+                </a>
+                <a href="reports.html?generate=TL-8429" id="detailsHeaderGenerateReportBtn" class="btn btn-tl-outline btn-sm d-inline-flex align-items-center gap-1">
+                  <i class="bi bi-printer"></i>
+                  <span>Generate Report</span>
+                </a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- NAVIGATION TABS -->
+        <ul class="nav nav-tabs mb-4 tl-investigation-tabs" id="investigationTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overviewPane" type="button" role="tab" aria-controls="overviewPane" aria-selected="true">
+              <i class="bi bi-grid-1x2 me-1"></i> Overview
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="evidence-tab" data-bs-toggle="tab" data-bs-target="#evidencePane" type="button" role="tab" aria-controls="evidencePane" aria-selected="false">
+              <i class="bi bi-layers me-1"></i> Evidence <span class="badge bg-secondary-subtle text-dark ms-1" id="detailsEvidenceTabBadge">0</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="notes-tab" data-bs-toggle="tab" data-bs-target="#notesPane" type="button" role="tab" aria-controls="notesPane" aria-selected="false">
+              <i class="bi bi-journal-text me-1"></i> Field Notes <span class="badge bg-secondary-subtle text-dark ms-1" id="detailsNotesTabBadge">0</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="timeline-tab" data-bs-toggle="tab" data-bs-target="#timelinePane" type="button" role="tab" aria-controls="timelinePane" aria-selected="false">
+              <i class="bi bi-clock-history me-1"></i> Audit Timeline <span class="badge bg-secondary-subtle text-dark ms-1" id="detailsTimelineTabBadge">0</span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="conclusion-tab" data-bs-toggle="tab" data-bs-target="#conclusionPane" type="button" role="tab" aria-controls="conclusionPane" aria-selected="false">
+              <i class="bi bi-check2-circle me-1"></i> Case Conclusion
+            </button>
+          </li>
+        </ul>
+
+        <!-- TAB CONTENT CONTAINER -->
+        <div class="tab-content" id="investigationTabContent">
+
+          <!-- ===================================================================
+               TAB 1: OVERVIEW PANE
+               =================================================================== -->
+          <div class="tab-pane fade show active" id="overviewPane" role="tabpanel" aria-labelledby="overview-tab">
+            
+            <!-- EVIDENTIARY SUMMARY BAR & CONFIDENCE METRIC -->
+            <div class="row g-3 mb-4">
+              
+              <!-- Evidence 4-Pillar Distribution Counters -->
+              <div class="col-lg-8">
+                <div class="tl-card p-3 p-md-4 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h3 class="tl-h3 mb-1">Evidence Corpus Distribution</h3>
+                      <p class="tl-small text-muted mb-0">Balance across the four analytical classification pillars</p>
+                    </div>
+                    <span class="badge bg-light text-dark border" id="detailsTotalRecordsBadge">0 Primary Records</span>
+                  </div>
+
+                  <!-- 4-Pillar Metric Cards -->
+                  <div class="row g-2 mb-3 text-center">
+                    <div class="col-6 col-sm-3">
+                      <div class="p-3 rounded-2 bg-success-subtle border border-success-subtle">
+                        <div class="tl-label text-success mb-1">Supporting</div>
+                        <div class="h3 fw-bold text-success mb-0" id="detailsSupportCount">0</div>
+                        <div class="tl-micro text-muted" id="detailsSupportPercent">0%</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                      <div class="p-3 rounded-2 bg-danger-subtle border border-danger-subtle">
+                        <div class="tl-label text-danger mb-1">Against / Refuting</div>
+                        <div class="h3 fw-bold text-danger mb-0" id="detailsAgainstCount">0</div>
+                        <div class="tl-micro text-muted" id="detailsAgainstPercent">0%</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                      <div class="p-3 rounded-2 bg-light border">
+                        <div class="tl-label text-secondary mb-1">Neutral Context</div>
+                        <div class="h3 fw-bold text-dark mb-0" id="detailsNeutralCount">0</div>
+                        <div class="tl-micro text-muted" id="detailsNeutralPercent">0%</div>
+                      </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                      <div class="p-3 rounded-2 bg-warning-subtle border border-warning-subtle">
+                        <div class="tl-label text-warning mb-1">Unverified</div>
+                        <div class="h3 fw-bold text-warning mb-0" id="detailsUnverifiedCount">0</div>
+                        <div class="tl-micro text-muted" id="detailsUnverifiedPercent">0%</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Proportional Visual Bar -->
+                  <div class="tl-spectrum-bar d-flex rounded overflow-hidden" id="detailsSpectrumBar" style="height: 10px;">
+                    <div class="bg-success" style="width: 0%;"></div>
+                    <div class="bg-danger" style="width: 0%;"></div>
+                    <div class="bg-secondary" style="width: 0%;"></div>
+                    <div class="bg-warning" style="width: 0%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Evidentiary Confidence Gauge -->
+              <div class="col-lg-4">
+                <div class="tl-card p-3 p-md-4 h-100 d-flex flex-column justify-content-between">
+                  <div>
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <span class="tl-label text-muted">Evidentiary Rigor</span>
+                      <span class="tl-badge tl-badge-support">Substantial Confidence</span>
+                    </div>
+                    <h3 class="tl-h3 mb-2">Investigation Confidence</h3>
+                    <p class="tl-small text-secondary mb-3">
+                      Assessment of source corroboration and independence, not a probability of claim veracity.
+                    </p>
+
+                    <!-- Score Indicator -->
+                    <div class="d-flex align-items-baseline gap-2 mb-2">
+                      <span class="display-5 fw-bold text-dark" id="detailsConfidenceScore">82%</span>
+                      <span class="text-muted tl-small">/ 100% Corroborated</span>
+                    </div>
+
+                    <div class="progress tl-progress-sm mb-2" style="height: 8px;">
+                      <div class="progress-bar bg-success" id="detailsConfidenceProgressBar" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+
+                  <div class="p-2 bg-light rounded border tl-micro text-muted" id="detailsCorroborationNote">
+                    <i class="bi bi-shield-check text-success me-1"></i>
+                    Corroborated by independent peer-reviewed literature and empirical benchmarks.
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- TWO COLUMN WORKSPACE: Scope & Metadata vs Recent Evidence -->
+            <div class="row g-4">
+              
+              <!-- Left Column: Scope, Background, Context, Tags -->
+              <div class="col-lg-6">
+                <div class="tl-card p-3 p-md-4 mb-4">
+                  <h3 class="tl-h3 mb-3">Dossier Formulation & Scope</h3>
+                  
+                  <div class="mb-3">
+                    <label class="tl-label text-muted d-block mb-1">Contextual Background</label>
+                    <p class="tl-small text-secondary mb-0" id="detailsContextBackground">
+                      Loading contextual case background...
+                    </p>
+                  </div>
+
+                  <div class="mb-3">
+                    <label class="tl-label text-muted d-block mb-1">Key Hypotheses & Verification Rubric</label>
+                    <ul class="tl-small text-secondary mb-0 ps-3 vstack gap-1" id="detailsHypothesesList">
+                      <li>Assess primary claims against peer-reviewed empirical publications.</li>
+                      <li>Review authoritative governmental or institutional datasets.</li>
+                      <li>Catalog all corroborating and refuting sources in the evidence vault.</li>
+                    </ul>
+                  </div>
+
+                  <hr class="my-3">
+
+                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <div>
+                      <span class="tl-label text-muted d-block mb-1">Assigned Case Tags</span>
+                      <div class="d-flex flex-wrap gap-1" id="detailsTagsWrapper">
+                        <span class="tl-tag-chip">fact-check</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Recent Investigation Audit Activity -->
+                <div class="tl-card p-3 p-md-4">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="tl-h3 mb-0">Recent Activity Feed</h3>
+                    <a href="#timelinePane" class="tl-small text-primary text-decoration-none fw-medium" onclick="bootstrap.Tab.getInstance(document.getElementById('timeline-tab')).show();">View Timeline</a>
+                  </div>
+
+                  <div class="tl-activity-feed vstack gap-3" id="detailsRecentActivityFeed">
+                    <!-- Dynamic Activity Items -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right Column: Recent Evidence Spotlight -->
+              <div class="col-lg-6">
+                <div class="tl-card p-3 p-md-4 h-100">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h3 class="tl-h3 mb-1">Recent Evidence Records</h3>
+                      <p class="tl-small text-muted mb-0">Primary sources attached to this case</p>
+                    </div>
+                    <a href="add-evidence.html" id="detailsIngestRecordBtn" class="btn btn-sm btn-tl-outline">+ Ingest Record</a>
+                  </div>
+
+                  <div class="vstack gap-3" id="detailsRecentEvidenceSpotlight">
+                    
+                    <!-- Evidence Item 1: Refuting -->
+                    <div class="tl-card p-3 border-start-against">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex gap-1 align-items-center">
+                          <span class="tl-badge tl-badge-against"><i class="bi bi-shield-x me-1"></i>Against</span>
+                          <span class="badge bg-light text-dark border tl-micro"><i class="bi bi-file-earmark-pdf text-danger me-1"></i>PDF Research</span>
+                        </div>
+                        <span class="tl-micro text-muted">Indexed Today</span>
+                      </div>
+                      <h4 class="tl-h4 mb-1">
+                        <a href="evidence.html?id=EV-1092" class="text-dark text-decoration-none">
+                          ACM Empirical Software Engineering: Limits of Autonomous Code Refactoring
+                        </a>
+                      </h4>
+                      <p class="tl-small text-secondary mb-2">
+                        Peer-reviewed benchmark of 1,200 commercial repositories demonstrated autonomous agents introduce subtle security and race conditions on 68% of complex commits.
+                      </p>
+                      <div class="d-flex justify-content-between align-items-center tl-micro text-muted border-top pt-2">
+                        <span>Source: <strong>dl.acm.org/doi/10.1145</strong></span>
+                        <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Credibility: 5/5 (Very High)</span>
+                      </div>
+                    </div>
+
+                    <!-- Evidence Item 2: Supporting (Venture Speech) -->
+                    <div class="tl-card p-3 border-start-support">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex gap-1 align-items-center">
+                          <span class="tl-badge tl-badge-support"><i class="bi bi-shield-check me-1"></i>Supporting</span>
+                          <span class="badge bg-light text-dark border tl-micro"><i class="bi bi-camera-video text-primary me-1"></i>Keynote Stream</span>
+                        </div>
+                        <span class="tl-micro text-muted">Indexed Aug 25</span>
+                      </div>
+                      <h4 class="tl-h4 mb-1">
+                        <a href="evidence.html?id=EV-1088" class="text-dark text-decoration-none">
+                          Global Tech Summit: CEO Keynote Declaration on Autonomous Engineering
+                        </a>
+                      </h4>
+                      <p class="tl-small text-secondary mb-2">
+                        Primary recorded assertion where commercial AI tooling vendor claimed software developers would become obsolete within 36 months.
+                      </p>
+                      <div class="d-flex justify-content-between align-items-center tl-micro text-muted border-top pt-2">
+                        <span>Source: <strong>youtube.com/watch?v=techsummit</strong></span>
+                        <span class="text-warning"><i class="bi bi-exclamation-diamond-fill me-1"></i>Credibility: 2/5 (Low - Marketing Bias)</span>
+                      </div>
+                    </div>
+
+                    <!-- Evidence Item 3: Government Labor Report -->
+                    <div class="tl-card p-3 border-start-against">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div class="d-flex gap-1 align-items-center">
+                          <span class="tl-badge tl-badge-against"><i class="bi bi-shield-x me-1"></i>Against</span>
+                          <span class="badge bg-light text-dark border tl-micro"><i class="bi bi-graph-up text-success me-1"></i>Labor Statistics</span>
+                        </div>
+                        <span class="tl-micro text-muted">Indexed Aug 27</span>
+                      </div>
+                      <h4 class="tl-h4 mb-1">
+                        <a href="evidence.html?id=EV-1084" class="text-dark text-decoration-none">
+                          U.S. Bureau of Labor Statistics: 2024–2034 Computer Systems Analyst Outlook
+                        </a>
+                      </h4>
+                      <p class="tl-small text-secondary mb-2">
+                        Projects 17% growth in software developer and engineering positions over the next decade, with generative AI augmenting rather than replacing human roles.
+                      </p>
+                      <div class="d-flex justify-content-between align-items-center tl-micro text-muted border-top pt-2">
+                        <span>Source: <strong>bls.gov/ooh/computer-and-it</strong></span>
+                        <span class="text-success"><i class="bi bi-patch-check-fill me-1"></i>Credibility: 5/5 (Very High)</span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- ===================================================================
+               TAB 2: EVIDENCE DIRECTORY PANE
+               =================================================================== -->
+          <div class="tab-pane fade" id="evidencePane" role="tabpanel" aria-labelledby="evidence-tab">
+            <div class="tl-card p-3 p-md-4">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
+                <div>
+                  <h3 class="tl-h3 mb-1">Attached Evidence Corpus</h3>
+                  <p class="tl-small text-muted mb-0">Complete list of indexed sources supporting or refuting this claim</p>
+                </div>
+                <div class="d-flex gap-2">
+                  <a href="add-evidence.html?case=TL-8429" id="detailsEvidenceTabIngestBtn" class="btn btn-sm btn-tl-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Ingest New Source
+                  </a>
+                </div>
+              </div>
+
+              <!-- Quick Table of Evidence -->
+              <div class="table-responsive">
+                <table class="table table-hover align-middle tl-table mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">Classification</th>
+                      <th scope="col">Source Title</th>
+                      <th scope="col">Media Type</th>
+                      <th scope="col">Credibility</th>
+                      <th scope="col">Ingested</th>
+                      <th scope="col" class="text-end">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="detailsEvidenceTableBody">
+                    <tr>
+                      <td><span class="tl-badge tl-badge-against">Against</span></td>
+                      <td>
+                        <div class="fw-semibold text-dark tl-small">ACM Transactions Limits of Code Refactoring</div>
+                        <div class="tl-micro text-muted">dl.acm.org &bull; Peer-Reviewed</div>
+                      </td>
+                      <td><span class="badge bg-light text-dark border">Research Paper</span></td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 Very High</span></td>
+                      <td class="tl-small text-muted">Today</td>
+                      <td class="text-end">
+                        <a href="evidence.html?id=EV-1092" class="btn btn-sm btn-light border py-1 px-2"><i class="bi bi-eye"></i></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tl-badge tl-badge-support">Supporting</span></td>
+                      <td>
+                        <div class="fw-semibold text-dark tl-small">Tech Summit CEO Keynote Declaration</div>
+                        <div class="tl-micro text-muted">youtube.com &bull; Recorded Speech</div>
+                      </td>
+                      <td><span class="badge bg-light text-dark border">Video Stream</span></td>
+                      <td><span class="badge bg-warning-subtle text-warning">2/5 Low</span></td>
+                      <td class="tl-small text-muted">Aug 25</td>
+                      <td class="text-end">
+                        <a href="evidence.html?id=EV-1088" class="btn btn-sm btn-light border py-1 px-2"><i class="bi bi-eye"></i></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tl-badge tl-badge-against">Against</span></td>
+                      <td>
+                        <div class="fw-semibold text-dark tl-small">BLS 10-Year Software Engineering Workforce Projections</div>
+                        <div class="tl-micro text-muted">bls.gov &bull; Government Statistics</div>
+                      </td>
+                      <td><span class="badge bg-light text-dark border">Dataset</span></td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 Very High</span></td>
+                      <td class="tl-small text-muted">Aug 27</td>
+                      <td class="text-end">
+                        <a href="evidence.html?id=EV-1084" class="btn btn-sm btn-light border py-1 px-2"><i class="bi bi-eye"></i></a>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td><span class="tl-badge tl-badge-neutral">Neutral</span></td>
+                      <td>
+                        <div class="fw-semibold text-dark tl-small">IEEE Glossary of Autonomous Software Systems Definitions</div>
+                        <div class="tl-micro text-muted">standards.ieee.org &bull; Technical Standard</div>
+                      </td>
+                      <td><span class="badge bg-light text-dark border">Documentation</span></td>
+                      <td><span class="badge bg-success-subtle text-success">5/5 Very High</span></td>
+                      <td class="tl-small text-muted">Aug 28</td>
+                      <td class="text-end">
+                        <a href="evidence.html?id=EV-1081" class="btn btn-sm btn-light border py-1 px-2"><i class="bi bi-eye"></i></a>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================================
+               TAB 3: NOTES PANE
+               =================================================================== -->
+          <div class="tab-pane fade" id="notesPane" role="tabpanel" aria-labelledby="notes-tab">
+            <div class="tl-card p-3 p-md-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h3 class="tl-h3 mb-1">Researcher Field Notes</h3>
+                  <p class="tl-small text-muted mb-0">Internal hypotheses, verification trails, and interview observations</p>
+                </div>
+                <button type="button" class="btn btn-sm btn-tl-primary" data-bs-toggle="modal" data-bs-target="#addNoteModal">
+                  <i class="bi bi-plus-lg me-1"></i> New Note
+                </button>
+              </div>
+
+              <div class="row g-3" id="detailsNotesCardsContainer">
+                <div class="col-md-6">
+                  <div class="p-3 bg-light rounded-2 border">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="fw-semibold text-dark tl-small">Benchmarking Discrepancies</span>
+                      <span class="tl-micro text-muted">Aug 28, 2026</span>
+                    </div>
+                    <p class="tl-small text-secondary mb-2">
+                      The benchmark presented in the CEO keynote was conducted on closed synthetic problems (HumanEval pass@1), not real-world legacy codebases with architectural constraints.
+                    </p>
+                    <div class="tl-micro text-primary"><i class="bi bi-person me-1"></i>Abinash Panigrahy</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="p-3 bg-light rounded-2 border">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                      <span class="fw-semibold text-dark tl-small">Expert Interview Planned</span>
+                      <span class="tl-micro text-muted">Aug 30, 2026</span>
+                    </div>
+                    <p class="tl-small text-secondary mb-2">
+                      Contacted Prof. S. Ramesh (Chair of Software Engineering, Carnegie Mellon) for on-the-record comment regarding maintenance overhead of AI-generated commits.
+                    </p>
+                    <div class="tl-micro text-primary"><i class="bi bi-person me-1"></i>Abinash Panigrahy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================================
+               TAB 4: TIMELINE PANE
+               =================================================================== -->
+          <div class="tab-pane fade" id="timelinePane" role="tabpanel" aria-labelledby="timeline-tab">
+            <div class="tl-card p-3 p-md-4">
+              <h3 class="tl-h3 mb-1">Audit Chronology</h3>
+              <p class="tl-small text-muted mb-4">Complete chain-of-custody log of all modifications, notes, and sources</p>
+
+              <div class="tl-timeline vstack gap-4 ps-3 border-start" id="detailsTimelineNodeContainer">
+                <div class="position-relative">
+                  <div class="tl-timeline-node bg-danger text-white"><i class="bi bi-shield-x"></i></div>
+                  <div class="ms-4">
+                    <div class="fw-semibold text-dark tl-small">Counter-Evidence Indexed</div>
+                    <p class="tl-small text-secondary mb-1">ACM Transactions paper on code maintainability attached to dossier.</p>
+                    <div class="tl-micro text-muted">Sep 10, 2026 at 14:15 &bull; Abinash Panigrahy</div>
+                  </div>
+                </div>
+
+                <div class="position-relative">
+                  <div class="tl-timeline-node bg-primary text-white"><i class="bi bi-sticky"></i></div>
+                  <div class="ms-4">
+                    <div class="fw-semibold text-dark tl-small">Researcher Note Logged</div>
+                    <p class="tl-small text-secondary mb-1">Methodology critique of vendor HumanEval testing conditions.</p>
+                    <div class="tl-micro text-muted">Aug 28, 2026 at 16:30 &bull; Abinash Panigrahy</div>
+                  </div>
+                </div>
+
+                <div class="position-relative">
+                  <div class="tl-timeline-node bg-success text-white"><i class="bi bi-folder-plus"></i></div>
+                  <div class="ms-4">
+                    <div class="fw-semibold text-dark tl-small">Investigation Case Formulated</div>
+                    <p class="tl-small text-secondary mb-1">Target proposition defined following viral keynote dissemination.</p>
+                    <div class="tl-micro text-muted">Aug 24, 2026 at 10:00 &bull; Abinash Panigrahy</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===================================================================
+               TAB 5: CASE CONCLUSION PANE
+               =================================================================== -->
+          <div class="tab-pane fade" id="conclusionPane" role="tabpanel" aria-labelledby="conclusion-tab">
+            <div class="tl-card p-3 p-md-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                  <h3 class="tl-h3 mb-1">Investigation Conclusion & Finding</h3>
+                  <p class="tl-small text-muted mb-0">Synthesis derived from attached empirical evidence and source credibility</p>
+                </div>
+                <span class="tl-badge tl-badge-against" id="detailsConclusionVerdictBadge">Refuted by Empirical Data</span>
+              </div>
+
+              <div class="p-3 bg-light rounded-2 border mb-3">
+                <h4 class="tl-h4 text-dark mb-2">Executive Summary of Findings</h4>
+                <p class="tl-small text-secondary mb-0" id="detailsConclusionText">
+                  The claim that generative AI models will replace all software engineers within three years is <strong>unsupported by empirical computer science literature and contradicting official workforce projections</strong>. While autonomous coding agents dramatically accelerate routine syntax boilerplate and unit test generation, current models exhibit severe degradation when managing distributed architectures, security invariants, and real-world system debugging. Independent research from ACM and IEEE confirms human oversight remains mandatory, and national labor bodies forecast sustained growth in software engineering employment over the next decade.
+                </p>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2">
+                <a href="reports.html?id=TL-8429" id="detailsConclusionReportBtn" class="btn btn-tl-primary btn-sm">
+                  <i class="bi bi-printer me-1"></i> Export Signed Dossier (PDF)
+                </a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- App Shell Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Add Field Note -->
+  <div class="modal fade" id="addNoteModal" tabindex="-1" aria-labelledby="addNoteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="addNoteModalLabel">
+            <i class="bi bi-sticky me-1 text-primary"></i> Add Investigator Note
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <div class="mb-3">
+            <label for="noteTitle" class="form-label tl-input-label">Note Heading</label>
+            <input type="text" class="form-control" id="noteTitle" placeholder="e.g., Cross-referencing IEEE definitions">
+          </div>
+          <div class="mb-3">
+            <label for="noteContent" class="form-label tl-input-label">Observation Details</label>
+            <textarea class="form-control" id="noteContent" rows="4" placeholder="Document leads, source limitations, or interviews..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-sm btn-tl-primary" id="btnSaveNewNote">Save Note</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session? Unsaved form entries will be lost.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <!-- Machine Learning Veracity Engine -->
+  <script src="js/ml-model.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Workspace Script -->
+  <script src="js/investigation.js"></script>
+</body>
+</html>

@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Final Conclusion & Synthesis — TruthLens Workspace</title>
+  <meta name="description" content="Synthesize findings, analyze evidentiary balance, identify narrative contradictions, and finalize case conclusions in TruthLens.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Shell Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Investigation & Conclusion Stylesheet -->
+  <link rel="stylesheet" href="css/investigation.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Identity Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark">Abinash Panigrahy</div>
+            <div class="tl-micro text-muted text-truncate">Senior Fact-Checker</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0 tl-small">
+                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                <li class="breadcrumb-item"><a href="investigations.html" class="text-decoration-none text-muted">Investigations</a></li>
+                <li class="breadcrumb-item"><a href="investigation-details.html?id=TL-8429" id="conclusionBreadcrumbLink" class="text-decoration-none text-muted">Case #TL-8429</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Case Conclusion</li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark">Abinash Panigrahy</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Header & Top Action Controls -->
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <h1 class="tl-h1 mb-0">Case Conclusion & Final Synthesis</h1>
+              <span id="conclusionStatusBadge" class="tl-badge tl-badge-against">
+                <i class="bi bi-shield-x me-1"></i>Mostly Unsupported
+              </span>
+            </div>
+            <p class="text-secondary tl-small mb-0">
+              Formulate the final research verdict based on the collected evidence corpus, source credibility, and observed contradictions.
+            </p>
+          </div>
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <button type="button" class="btn btn-tl-outline d-none d-inline-flex align-items-center gap-2" id="btnUnlockEdit">
+              <i class="bi bi-pencil"></i>
+              <span>Edit Conclusion</span>
+            </button>
+            <a href="reports.html?id=TL-8429" id="conclusionViewReportBtn" class="btn btn-tl-secondary d-inline-flex align-items-center gap-2">
+              <i class="bi bi-printer"></i>
+              <span>View Dossier Report</span>
+            </a>
+            <a href="investigation-details.html?id=TL-8429" id="conclusionBackBtn" class="btn btn-tl-outline d-inline-flex align-items-center gap-2">
+              <i class="bi bi-arrow-left"></i>
+              <span>Back to Case</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- System Alerts -->
+        <div id="conclusionSuccessAlert" class="alert alert-success d-none align-items-center gap-2 mb-4 p-3 tl-small" role="alert">
+          <i class="bi bi-check-circle-fill fs-5 flex-shrink-0"></i>
+          <div class="flex-grow-1">
+            <span class="fw-semibold d-block">Conclusion Updated Successfully!</span>
+            <span id="conclusionSuccessMessage">Case status and final executive summary have been logged to the audit trail.</span>
+          </div>
+        </div>
+
+        <!-- 1. TARGET INVESTIGATION CLAIM BANNER -->
+        <div class="tl-card p-3 p-md-4 mb-4 border-start-primary bg-white shadow-sm">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="tl-badge tl-badge-active" id="conclusionCaseBadge">Inquest #TL-8429</span>
+              <span class="badge bg-light text-dark border tl-micro" id="conclusionCategoryBadge">Artificial Intelligence & Labor</span>
+            </div>
+            <span class="tl-small text-muted" id="conclusionDateSpan"><i class="bi bi-calendar3 me-1"></i>Initiated: Aug 24, 2026</span>
+          </div>
+          
+          <div class="tl-claim-box p-3 rounded-2 bg-light">
+            <span class="tl-label text-muted d-block mb-1">
+              <i class="bi bi-quote fs-6 me-1"></i>Target Proposition Under Falsification Testing
+            </span>
+            <div class="fw-bold text-dark fs-5" id="conclusionClaimBox">
+              "Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years."
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. EVIDENCE SUMMARY & METRICS (3 COLUMNS) -->
+        <div class="row g-3 mb-4">
+          
+          <!-- Supporting Column -->
+          <div class="col-md-4">
+            <div class="tl-card p-3 h-100 border-top-support bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="tl-badge tl-badge-support">
+                  <i class="bi bi-shield-check me-1"></i>Supporting Evidence
+                </span>
+                <span class="h4 fw-bold text-success mb-0">3 Records</span>
+              </div>
+              <p class="tl-micro text-secondary mb-2">
+                Sources corroborating rapid synthetic syntax generation and isolated task automation.
+              </p>
+              <ul class="list-unstyled tl-micro text-muted mb-0 vstack gap-1 border-top pt-2">
+                <li class="text-truncate">&bull; Global Tech Summit CEO Keynote (Credibility: 2/5)</li>
+                <li class="text-truncate">&bull; Syntropic AI Marketing Whitepaper (Credibility: 2/5)</li>
+                <li class="text-truncate">&bull; TechCrunch Venture Round Announcement (Credibility: 3/5)</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Against Column -->
+          <div class="col-md-4">
+            <div class="tl-card p-3 h-100 border-top-against bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="tl-badge tl-badge-against">
+                  <i class="bi bi-shield-x me-1"></i>Against Evidence
+                </span>
+                <span class="h4 fw-bold text-danger mb-0">8 Records</span>
+              </div>
+              <p class="tl-micro text-secondary mb-2">
+                Empirical refutations, peer-reviewed benchmarks, and macroeconomic employment projections.
+              </p>
+              <ul class="list-unstyled tl-micro text-muted mb-0 vstack gap-1 border-top pt-2">
+                <li class="text-truncate">&bull; ACM Empirical Software Engineering Study (Credibility: 5/5)</li>
+                <li class="text-truncate">&bull; U.S. BLS 10-Year Labor Projections (Credibility: 5/5)</li>
+                <li class="text-truncate">&bull; IEEE Spectrum Distributed Systems Survey (Credibility: 5/5)</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Neutral Column -->
+          <div class="col-md-4">
+            <div class="tl-card p-3 h-100 border-top-neutral bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="tl-badge tl-badge-neutral">
+                  <i class="bi bi-dash-circle me-1"></i>Neutral Context
+                </span>
+                <span class="h4 fw-bold text-secondary mb-0">3 Records</span>
+              </div>
+              <p class="tl-micro text-secondary mb-2">
+                Standard technical taxonomies, legal definitions, and labor category boundaries.
+              </p>
+              <ul class="list-unstyled tl-micro text-muted mb-0 vstack gap-1 border-top pt-2">
+                <li class="text-truncate">&bull; IEEE Standard P2894 Autonomous Taxonomies (Credibility: 5/5)</li>
+                <li class="text-truncate">&bull; EU AI Act Categorization Definitions (Credibility: 5/5)</li>
+                <li class="text-truncate">&bull; StackOverflow Developer Demographics 2026 (Credibility: 4/5)</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 3. CONFIDENCE LEVEL & CRITICAL METHODOLOGICAL DISCLAIMER -->
+        <div class="tl-card p-3 p-md-4 mb-4 bg-white">
+          <div class="row align-items-center gy-3">
+            <div class="col-lg-5">
+              <div class="d-flex align-items-center gap-2 mb-1">
+                <span class="tl-label text-muted">Evidentiary Rigor</span>
+                <span class="badge bg-success-subtle text-success border border-success-subtle fw-semibold tl-micro">Substantial Documentation</span>
+              </div>
+              <h3 class="tl-h3 mb-2">Investigation Confidence: 82%</h3>
+              <div class="progress tl-progress-sm mb-2" style="height: 10px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 82%" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+              <div class="d-flex justify-content-between tl-micro text-muted">
+                <span>0% (Weak / Conflicting)</span>
+                <span>50% (Moderate)</span>
+                <span>100% (Cross-Verified)</span>
+              </div>
+            </div>
+
+            <div class="col-lg-7">
+              <!-- MANDATORY DISCLAIMER AS PER DESIGN GUIDELINES -->
+              <div class="p-3 bg-light rounded-2 border border-warning-subtle text-secondary tl-small">
+                <div class="d-flex align-items-center gap-2 mb-1 text-dark fw-semibold">
+                  <i class="bi bi-exclamation-triangle text-warning fs-5"></i>
+                  <span>Important Note on Evidentiary Confidence:</span>
+                </div>
+                <p class="mb-0 tl-small">
+                  The confidence level is strictly an assessment of <strong>investigation strength, multi-source diversity, and documentation depth</strong>. It does <strong>NOT</strong> represent an absolute probability or mathematical proof that the claim is true or false.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. KEY FINDINGS & CONTRADICTIONS GRID -->
+        <div class="row g-4 mb-4">
+          
+          <!-- Key Findings -->
+          <div class="col-lg-6">
+            <div class="tl-card p-3 p-md-4 h-100 bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="tl-icon-box bg-success-subtle text-success">
+                    <i class="bi bi-journal-check"></i>
+                  </span>
+                  <h3 class="tl-h3 mb-0">Key Synthesized Findings</h3>
+                </div>
+                <span class="badge bg-light text-dark border tl-micro">3 Core Insights</span>
+              </div>
+
+              <div class="vstack gap-3">
+                <div class="p-2 rounded bg-light border">
+                  <div class="fw-semibold text-dark tl-small mb-1">1. Narrow Task Automation vs. Systems Architecture</div>
+                  <p class="tl-micro text-secondary mb-0">
+                    Peer-reviewed evaluations (ACM) demonstrate that autonomous models excel at boilerplate syntax and isolated functions but degrade significantly in multi-threaded legacy codebases (introducing race conditions on 68% of refactoring tasks).
+                  </p>
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <div class="fw-semibold text-dark tl-small mb-1">2. Macroeconomic Labor Demand Growth</div>
+                  <p class="tl-micro text-secondary mb-0">
+                    Official labor statistics (U.S. BLS) forecast a 17% expansion in computer systems analyst and software development roles over the 2024–2034 horizon, directly contradicting the premise of industry-wide workforce obsolescence.
+                  </p>
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <div class="fw-semibold text-dark tl-small mb-1">3. Human-in-the-Loop Requirement in Legal & Safety Standards</div>
+                  <p class="tl-micro text-secondary mb-0">
+                    Emerging regulatory standards (IEEE, EU AI Act) mandate human review and architectural liability for enterprise code bases, making fully unassisted autonomous deployment commercially unfeasible.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contradictions & Unresolved Questions -->
+          <div class="col-lg-6">
+            <div class="tl-card p-3 p-md-4 h-100 bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <span class="tl-icon-box bg-danger-subtle text-danger">
+                    <i class="bi bi-exclamation-octagon"></i>
+                  </span>
+                  <h3 class="tl-h3 mb-0">Contradictions & Unresolved Leads</h3>
+                </div>
+                <span class="badge bg-light text-dark border tl-micro">2 Identified Gaps</span>
+              </div>
+
+              <div class="vstack gap-3">
+                <div class="p-2 rounded bg-light border border-danger-subtle">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-semibold text-danger tl-small">Benchmark Discrepancy</span>
+                    <span class="badge bg-danger-subtle text-danger tl-micro">Direct Contradiction</span>
+                  </div>
+                  <p class="tl-micro text-secondary mb-0">
+                    Commercial marketing benchmarks cited 84% autonomous pass rates using synthetic HumanEval tests, whereas independent academic benchmarks across GitHub enterprise repositories showed a failure rate exceeding 60% on complex commits.
+                  </p>
+                </div>
+
+                <div class="p-2 rounded bg-light border border-warning-subtle">
+                  <div class="d-flex align-items-center justify-content-between mb-1">
+                    <span class="fw-semibold text-warning-emphasis tl-small">Entry-Level Junior Hiring Disruption</span>
+                    <span class="badge bg-warning-subtle text-warning tl-micro">Open Question</span>
+                  </div>
+                  <p class="tl-micro text-secondary mb-0">
+                    While overall software engineering employment continues to grow, preliminary university career placement data suggests entry-level junior developer internships may face short-term contraction as firms restructure training pipelines.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 5. FINAL CONCLUSION FORM & VERDICT WORKSPACE -->
+        <div class="tl-card p-3 p-md-4 mb-4 bg-white">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+              <h3 class="tl-h3 mb-1">Final Inquest Formulation</h3>
+              <p class="tl-small text-muted mb-0">Draft or lock the final conclusion dossier</p>
+            </div>
+            <div class="tl-small text-muted">
+              <i class="bi bi-clock-history me-1"></i>Last saved: <span id="lastSavedTimestamp" class="text-dark fw-medium">Sep 10, 2026 18:30 IST</span>
+            </div>
+          </div>
+
+          <!-- Structured Form for Future POST /investigations/<id>/conclusion -->
+          <form id="conclusionForm" novalidate>
+            
+            <!-- Conclusion Status Selector -->
+            <div class="row g-3 mb-3">
+              <div class="col-md-6">
+                <label for="conclusionStatusSelect" class="form-label tl-input-label">
+                  Final Conclusion Status / Verdict <span class="text-danger">*</span>
+                </label>
+                <select class="form-select fw-semibold" id="conclusionStatusSelect" required>
+                  <option value="Mostly Unsupported" selected>Mostly Unsupported (Empirically Contradicted)</option>
+                  <option value="Unsupported">Unsupported (Completely Falsified)</option>
+                  <option value="Partially Supported">Partially Supported (Mixed Evidence)</option>
+                  <option value="Mostly Supported">Mostly Supported (Substantiated with Caveats)</option>
+                  <option value="Inconclusive">Inconclusive (Insufficient Verifiable Records)</option>
+                </select>
+                <div class="form-text tl-micro text-muted">
+                  Reflects the net balance of supporting vs. refuting evidence.
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="leadAnalystField" class="form-label tl-input-label">
+                  Authorizing Lead Investigator
+                </label>
+                <input type="text" class="form-control bg-light" id="leadAnalystField" value="Abinash Panigrahy (Senior Fact-Checker)" readonly>
+              </div>
+            </div>
+
+            <!-- Conclusion Textarea with Character Counter -->
+            <div class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label for="conclusionTextarea" class="form-label tl-input-label mb-0">
+                  Comprehensive Conclusion Statement <span class="text-danger">*</span>
+                </label>
+                <span class="tl-micro text-muted" id="conclusionCharCounter">0 / 2500</span>
+              </div>
+              <textarea 
+                class="form-control tl-body" 
+                id="conclusionTextarea" 
+                rows="8" 
+                maxlength="2500" 
+                required 
+                placeholder="Synthesize the factual evidence, highlight institutional source credibility, address identified contradictions, and formulate the final verdict...">The claim that generative AI models will completely eliminate the demand for software engineering positions within three years is Mostly Unsupported by empirical research and contradicted by authoritative economic and employment data.
+
+While commercial keynote addresses demonstrated high success on isolated, synthetic code snippets, peer-reviewed empirical studies published in ACM Transactions demonstrate that autonomous models introduce subtle security vulnerabilities, multi-threading race conditions, and architectural regressions when refactoring real-world systems. Furthermore, long-term employment data from the U.S. Bureau of Labor Statistics projects a 17% growth rate in software development positions over the coming decade.
+
+The evidence suggests generative coding models will act as cognitive force multipliers that alter boilerplate syntax completion rather than replacing the software engineering discipline.</textarea>
+              <div class="invalid-feedback">
+                Please provide a comprehensive synthesis (minimum 100 characters).
+              </div>
+            </div>
+
+            <!-- Action Controls Row -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top gap-2">
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-tl-secondary" id="btnSaveDraft">
+                  <i class="bi bi-pencil me-1"></i> Save Draft
+                </button>
+              </div>
+
+              <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn btn-tl-primary d-inline-flex align-items-center gap-2" id="btnFinalizeModalTrigger" data-bs-toggle="modal" data-bs-target="#finalizeModal">
+                  <i class="bi bi-shield-lock-fill"></i>
+                  <span>Finalize Conclusion</span>
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </main>
+
+      <!-- App Shell Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Finalize Conclusion Confirmation -->
+  <div class="modal fade" id="finalizeModal" tabindex="-1" aria-labelledby="finalizeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="finalizeModalLabel">
+            <i class="bi bi-shield-check text-primary me-1"></i> Finalize Investigation Conclusion
+          </h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-3">
+            Are you sure you want to finalize and sign this investigation? Finalizing locks the conclusion text against further accidental editing and generates an immutable audit timestamp.
+          </p>
+          <div class="p-3 bg-light rounded border tl-small">
+            <div><strong>Assigned Verdict:</strong> <span id="modalVerdictPreview" class="text-danger fw-semibold">Mostly Unsupported</span></div>
+            <div><strong>Evidentiary Confidence:</strong> <span class="text-success fw-semibold">82% (Substantial)</span></div>
+            <div><strong>Corpus Size:</strong> 14 Verified Primary Sources</div>
+          </div>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Keep Editing</button>
+          <button type="button" class="btn btn-sm btn-tl-primary" id="btnConfirmFinalize">
+            <i class="bi bi-lock-fill me-1"></i> Confirm & Finalize Case
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REUSABLE MODAL: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session? Unsaved draft entries will be lost.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Investigation Controller (Handles Conclusion Actions) -->
+  <script src="js/investigation.js"></script>
+</body>
+</html>

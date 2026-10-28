@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Theme Detection & Anti-Flicker (Immediate Paint) -->
+  <script>
+    (function() {
+      try {
+        var s = localStorage.getItem('truthlens_theme');
+        var t = s ? s : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', t);
+        document.documentElement.setAttribute('data-bs-theme', t);
+      } catch (_) {}
+    })();
+  </script>
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Evidence — TruthLens Workspace</title>
+  <meta name="description" content="Ingest and classify primary source evidence, evaluate source credibility, and record citations in TruthLens.">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <!-- Core System Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- Dashboard Shell Stylesheet -->
+  <link rel="stylesheet" href="css/dashboard.css">
+
+  <!-- Investigation Workspace Stylesheet -->
+  <link rel="stylesheet" href="css/investigation.css">
+</head>
+<body class="tl-dashboard-body">
+
+  <!-- Mobile Offcanvas Backdrop Helper -->
+  <div class="tl-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <div class="tl-app-layout">
+
+    <!-- 1. LEFT SIDEBAR NAVIGATION -->
+    <aside class="tl-sidebar" id="appSidebar" aria-label="Main Application Navigation">
+      
+      <!-- Brand Header -->
+      <div class="tl-sidebar-header">
+        <a class="d-flex align-items-center gap-2 text-decoration-none" href="index.html">
+          <span class="tl-brand-icon">
+            <i class="bi bi-shield-check"></i>
+          </span>
+          <span class="tl-brand-text">Truth<span class="tl-brand-accent">Lens</span></span>
+        </a>
+        <button type="button" class="btn-close d-lg-none" id="closeSidebarBtn" aria-label="Close Sidebar"></button>
+      </div>
+
+      <!-- Quick Action Button in Sidebar -->
+      <div class="px-3 pt-3 pb-2">
+        <a href="create-investigation.html" class="btn btn-tl-primary w-100 d-flex align-items-center justify-content-center gap-2">
+          <i class="bi bi-plus-lg"></i>
+          <span>New Investigation</span>
+        </a>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="tl-sidebar-menu flex-grow-1">
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="dashboard.html">
+              <i class="bi bi-grid-1x2"></i>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="investigations.html">
+              <i class="bi bi-folder2-open"></i>
+              <span>My Investigations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="create-investigation.html">
+              <i class="bi bi-file-earmark-plus"></i>
+              <span>Create Investigation</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="evidence.html">
+              <i class="bi bi-layers"></i>
+              <span>Evidence</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="notes.html">
+              <i class="bi bi-journal-text"></i>
+              <span>Notes</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="timeline.html">
+              <i class="bi bi-clock-history"></i>
+              <span>Timeline</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="reports.html">
+              <i class="bi bi-file-earmark-bar-graph"></i>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+
+        <hr class="tl-sidebar-divider">
+
+        <div class="tl-sidebar-label px-3 mb-2">Account & Tools</div>
+        <ul class="nav flex-column">
+          <li class="nav-item">
+            <a class="nav-link" href="profile.html">
+              <i class="bi bi-person"></i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="settings.html">
+              <i class="bi bi-gear"></i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- User Identity Footer -->
+      <div class="tl-sidebar-footer p-3 border-top">
+        <div class="d-flex align-items-center gap-2">
+          <div class="tl-avatar-sm">
+            <i class="bi bi-person-fill"></i>
+          </div>
+          <div class="overflow-hidden">
+            <div class="tl-small fw-semibold text-truncate text-dark">Abinash Panigrahy</div>
+            <div class="tl-micro text-muted text-truncate">Senior Fact-Checker</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER: Topbar + Workspace Content -->
+    <div class="tl-main-wrapper">
+      
+      <!-- 2. TOP NAVBAR -->
+      <header class="tl-topbar sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex align-items-center justify-content-between h-100">
+          
+          <div class="d-flex align-items-center gap-3">
+            <button class="btn btn-light d-lg-none tl-btn-icon" id="sidebarToggleBtn" aria-label="Toggle navigation drawer">
+              <i class="bi bi-list fs-5"></i>
+            </button>
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0 tl-small">
+                <li class="breadcrumb-item"><a href="dashboard.html" class="text-decoration-none text-muted">Workspace</a></li>
+                <li class="breadcrumb-item"><a href="investigations.html" class="text-decoration-none text-muted">Investigations</a></li>
+                <li class="breadcrumb-item"><a href="investigation-details.html?id=TL-8429" class="text-decoration-none text-muted" id="breadcrumbCaseLink">Case #TL-8429</a></li>
+                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Add Evidence</li>
+              </ol>
+            </nav>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <!-- Firebase Connection Status Pill -->
+            <span id="firebaseStatusPill" class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle d-inline-flex align-items-center gap-1 py-1 px-2" style="font-size: 0.75rem;">
+              <span class="status-dot bg-warning rounded-circle" style="width:7px;height:7px;display:inline-block;"></span> Firebase
+            </span>
+
+            <!-- Theme Toggle Quick Action in Topbar -->
+            <button class="btn btn-light tl-btn-icon" id="topbarThemeToggleBtn" title="Toggle Dark/Light Mode (Alt+T)" aria-label="Toggle Theme">
+              <i class="bi bi-moon-stars" id="topbarThemeIcon"></i>
+            </button>
+
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+              <button class="btn btn-light d-flex align-items-center gap-2 border py-1 px-2" type="button" id="userProfileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <div class="tl-avatar-xs">
+                  <i class="bi bi-person-fill"></i>
+                </div>
+                <span class="d-none d-sm-inline tl-small fw-semibold text-dark">Abinash Panigrahy</span>
+                <i class="bi bi-chevron-down text-muted tl-micro"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end shadow-sm p-2" aria-labelledby="userProfileDropdown">
+                <li><a class="dropdown-item tl-small" href="profile.html"><i class="bi bi-person me-2"></i>Profile</a></li>
+                <li><a class="dropdown-item tl-small" href="settings.html"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                <li><hr class="dropdown-divider my-2"></li>
+                <li><a class="dropdown-item tl-small text-danger" href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class="bi bi-box-arrow-right me-2"></i>Sign Out</a></li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- 3. MAIN WORKSPACE CONTENT -->
+      <main class="tl-main-content p-3 p-md-4">
+        
+        <!-- Header & Case Context Strip -->
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3 mb-4">
+          <div>
+            <h1 class="tl-h1 mb-1">Ingest Source Evidence</h1>
+            <p class="text-secondary tl-small mb-0">
+              Attach primary documentation, score institution credibility, and classify evidential stance against the claim.
+            </p>
+          </div>
+          <div>
+            <a href="investigation-details.html?id=TL-8429" class="btn btn-tl-outline d-inline-flex align-items-center gap-2" id="backToCaseBtn">
+              <i class="bi bi-arrow-left"></i>
+              <span>Back to Case Dossier</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Target Claim Context Banner -->
+        <div class="tl-card p-3 mb-4 bg-light border-start-primary">
+          <div class="d-flex align-items-start justify-content-between">
+            <div>
+              <span class="tl-label text-muted d-block mb-1" id="bannerCaseLabel">Target Claim Under Inquest (#TL-8429)</span>
+              <p class="fw-semibold text-dark mb-0 fs-6" id="contextClaimText">
+                "Generative AI autonomous coding models will completely eliminate the demand for software engineering positions within three years."
+              </p>
+            </div>
+            <span class="tl-badge tl-badge-active ms-3 flex-shrink-0" id="bannerCaseBadge">Active Case</span>
+          </div>
+        </div>
+
+        <!-- Banner Alerts -->
+        <div id="evidenceSuccessAlert" class="alert alert-success d-none align-items-center gap-2 mb-4 p-3 tl-small" role="alert">
+          <i class="bi bi-check-circle-fill fs-5 flex-shrink-0"></i>
+          <div class="flex-grow-1">
+            <span class="fw-semibold d-block">Evidence Indexed Successfully!</span>
+            <span id="evidenceSuccessMessage">The record has been verified and added to the case corpus. Redirecting...</span>
+          </div>
+        </div>
+
+        <div id="evidenceErrorAlert" class="alert alert-danger d-none align-items-center gap-2 mb-4 p-3 tl-small" role="alert">
+          <i class="bi bi-exclamation-triangle-fill fs-5 flex-shrink-0"></i>
+          <div class="flex-grow-1">
+            <span class="fw-semibold d-block">Validation Checks Failed</span>
+            <span id="evidenceErrorMessage">Please correct the highlighted errors before saving.</span>
+          </div>
+        </div>
+
+        <!-- Main Form Grid: 8 Cols Form / 4 Cols Guidance -->
+        <div class="row g-4">
+          
+          <!-- LEFT: Evidence Ingestion Form (8 Cols) -->
+          <div class="col-lg-8">
+            <div class="tl-card p-3 p-md-4">
+              
+              <!-- Configured for future Flask POST: /investigations/<id>/evidence -->
+              <form id="addEvidenceForm" method="POST" action="/investigations/TL-8429/evidence" enctype="multipart/form-data" novalidate autocomplete="off">
+                
+                <!-- Target Case Selector -->
+                <div class="mb-3">
+                  <label for="evidenceTargetCase" class="form-label tl-input-label">
+                    Target Investigation Dossier <span class="text-danger">*</span>
+                  </label>
+                  <select class="form-select fw-semibold" id="evidenceTargetCase" name="target_case">
+                    <option value="TL-8429" selected>#TL-8429: AI Developer Replacement</option>
+                  </select>
+                  <div class="form-text tl-micro text-muted">
+                    Evidence is cryptographically attached to this active inquiry dossier.
+                  </div>
+                </div>
+
+                <!-- Field 1: Evidence Title -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="evidenceTitle" class="form-label tl-input-label mb-0">
+                      Evidence / Source Title <span class="text-danger">*</span>
+                    </label>
+                    <span class="tl-micro text-muted" id="titleCounter">0 / 150</span>
+                  </div>
+                  <input 
+                    type="text" 
+                    class="form-control" 
+                    id="evidenceTitle" 
+                    name="title" 
+                    maxlength="150"
+                    placeholder="e.g., ACM Empirical Evaluation of LLM Code Maintenance and Race Conditions" 
+                    required 
+                    aria-describedby="titleFeedback">
+                  <div id="titleFeedback" class="invalid-feedback">
+                    Please provide an evidence title (minimum 10 characters).
+                  </div>
+                </div>
+
+                <!-- Row: Evidence Type & Source URL -->
+                <div class="row g-3 mb-3">
+                  
+                  <!-- Field 2: Evidence Type -->
+                  <div class="col-md-6">
+                    <label for="evidenceType" class="form-label tl-input-label">
+                      Evidence Type <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" id="evidenceType" name="evidence_type" required aria-describedby="typeFeedback">
+                      <option value="" disabled selected>Select format...</option>
+                      <option value="Research Paper">Research Paper</option>
+                      <option value="Government Report">Government Report</option>
+                      <option value="Statistics">Statistics / Dataset</option>
+                      <option value="Article">News / Journalistic Article</option>
+                      <option value="Website">Website / Official Portal</option>
+                      <option value="Video">Video / Recorded Stream</option>
+                      <option value="PDF">Archived PDF Document</option>
+                      <option value="Image">Image / Screen Capture</option>
+                      <option value="Social Media">Social Media Post</option>
+                      <option value="Personal Note">Personal Witness / Interview Note</option>
+                    </select>
+                    <div id="typeFeedback" class="invalid-feedback">
+                      Please select the evidence source format.
+                    </div>
+                  </div>
+
+                  <!-- Field 3: Source URL -->
+                  <div class="col-md-6">
+                    <label for="sourceUrl" class="form-label tl-input-label">
+                      Source URL
+                    </label>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light text-muted"><i class="bi bi-link-45deg"></i></span>
+                      <input 
+                        type="url" 
+                        class="form-control" 
+                        id="sourceUrl" 
+                        name="source_url" 
+                        placeholder="https://doi.org/... or https://..." 
+                        aria-describedby="urlFeedback">
+                      <div id="urlFeedback" class="invalid-feedback">
+                        Please enter a valid web URL (must begin with http:// or https://).
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Row: Author, Publisher & Publication Date -->
+                <div class="row g-3 mb-3">
+                  
+                  <!-- Field 4: Author -->
+                  <div class="col-md-4">
+                    <label for="evidenceAuthor" class="form-label tl-input-label">
+                      Author / Originator
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="evidenceAuthor" 
+                      name="author" 
+                      placeholder="e.g., Dr. Elena Rostova et al.">
+                  </div>
+
+                  <!-- Field 5: Publisher / Institution -->
+                  <div class="col-md-4">
+                    <label for="evidencePublisher" class="form-label tl-input-label">
+                      Publisher / Organization <span class="text-danger">*</span>
+                    </label>
+                    <input 
+                      type="text" 
+                      class="form-control" 
+                      id="evidencePublisher" 
+                      name="publisher" 
+                      placeholder="e.g., Association for Computing Machinery (ACM)" 
+                      required 
+                      aria-describedby="publisherFeedback">
+                    <div id="publisherFeedback" class="invalid-feedback">
+                      Please state the publishing organization or domain.
+                    </div>
+                  </div>
+
+                  <!-- Field 6: Publication Date -->
+                  <div class="col-md-4">
+                    <label for="publicationDate" class="form-label tl-input-label">
+                      Publication / Release Date
+                    </label>
+                    <input 
+                      type="date" 
+                      class="form-control" 
+                      id="publicationDate" 
+                      name="publication_date">
+                  </div>
+
+                </div>
+
+                <!-- Row: Classification & Credibility -->
+                <div class="row g-3 mb-3">
+                  
+                  <!-- Field 7: Evidentiary Classification -->
+                  <div class="col-md-6">
+                    <label for="evidenceClassification" class="form-label tl-input-label">
+                      Evidentiary Classification <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" id="evidenceClassification" name="classification" required aria-describedby="classFeedback">
+                      <option value="" disabled selected>Select relationship to claim...</option>
+                      <option value="Supporting">Supporting (Substantiates Claim)</option>
+                      <option value="Against">Against (Disproves / Refutes Claim)</option>
+                      <option value="Neutral">Neutral (Contextual / Procedural)</option>
+                      <option value="Needs Verification">Needs Verification (Pending Check)</option>
+                    </select>
+                    <div id="classFeedback" class="invalid-feedback">
+                      Please classify the evidentiary stance toward the claim.
+                    </div>
+                  </div>
+
+                  <!-- Field 8: Credibility Rating (1 to 5) -->
+                  <div class="col-md-6">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <label for="credibilityRating" class="form-label tl-input-label mb-0">
+                        Credibility Rating <span class="text-danger">*</span>
+                      </label>
+                      <span class="tl-small fw-semibold text-primary" id="credibilityLabel">4 / 5 — High</span>
+                    </div>
+                    <input 
+                      type="range" 
+                      class="form-range" 
+                      min="1" 
+                      max="5" 
+                      step="1" 
+                      value="4" 
+                      id="credibilityRating" 
+                      name="credibility_rating">
+                    <div class="d-flex justify-content-between tl-micro text-muted px-1">
+                      <span>1 (Very Low)</span>
+                      <span>2 (Low)</span>
+                      <span>3 (Moderate)</span>
+                      <span>4 (High)</span>
+                      <span>5 (Very High)</span>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- Field 9: Key Finding Summary -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="evidenceSummary" class="form-label tl-input-label mb-0">
+                      Key Evidentiary Summary <span class="text-danger">*</span>
+                    </label>
+                    <span class="tl-micro text-muted" id="summaryCounter">0 / 400</span>
+                  </div>
+                  <textarea 
+                    class="form-control" 
+                    id="evidenceSummary" 
+                    name="summary" 
+                    rows="3" 
+                    maxlength="400"
+                    placeholder="Provide a concise 1-3 sentence summary of the verified factual finding extracted from this source..." 
+                    required 
+                    aria-describedby="summaryFeedback"></textarea>
+                  <div id="summaryFeedback" class="invalid-feedback">
+                    Please provide an evidentiary summary (minimum 25 characters).
+                  </div>
+                </div>
+
+                <!-- Field 10: Full Description & Methodological Context -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="evidenceDescription" class="form-label tl-input-label mb-0">
+                      Detailed Methodology & Excerpt
+                    </label>
+                    <span class="tl-micro text-muted" id="descCounter">0 / 1200</span>
+                  </div>
+                  <textarea 
+                    class="form-control" 
+                    id="evidenceDescription" 
+                    name="description" 
+                    rows="4" 
+                    maxlength="1200"
+                    placeholder="Paste verbatim block quotes, dataset tables, empirical methodologies, or sample sizes..."></textarea>
+                </div>
+
+                <!-- Field 11: Researcher Notes -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between align-items-center mb-1">
+                    <label for="evidenceNotes" class="form-label tl-input-label mb-0">
+                      Investigator Observations & Caveats
+                    </label>
+                    <span class="tl-micro text-muted" id="notesCounter">0 / 500</span>
+                  </div>
+                  <textarea 
+                    class="form-control" 
+                    id="evidenceNotes" 
+                    name="notes" 
+                    rows="2" 
+                    maxlength="500"
+                    placeholder="Note institutional biases, funding sources, peer-review status, or potential conflicts of interest..."></textarea>
+                </div>
+
+                <!-- Field 12: File Attachment / Primary Artifact Upload -->
+                <div class="mb-4">
+                  <label class="form-label tl-input-label">
+                    Primary Artifact Upload (Optional)
+                  </label>
+                  
+                  <div class="tl-dropzone p-4 text-center border rounded-2" id="dropzoneArea">
+                    <input 
+                      type="file" 
+                      class="d-none" 
+                      id="fileUploadInput" 
+                      name="evidence_file" 
+                      accept=".pdf,.png,.jpg,.jpeg,.csv,.xlsx,.docx">
+                    <div id="dropzonePrompt">
+                      <i class="bi bi-cloud-arrow-up fs-2 text-primary d-block mb-2"></i>
+                      <span class="fw-semibold text-dark tl-small d-block">Choose file or drag & drop</span>
+                      <span class="tl-micro text-muted d-block mt-1">PDF, PNG, JPG, CSV, XLSX, DOCX (Max 15MB)</span>
+                      <button type="button" class="btn btn-sm btn-tl-outline mt-2" id="browseFileBtn">Browse Files</button>
+                    </div>
+
+                    <!-- Selected File Preview Container -->
+                    <div id="filePreviewContainer" class="d-none text-start p-3 bg-white rounded border mt-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-3 overflow-hidden">
+                          <div class="tl-file-icon fs-3 text-primary flex-shrink-0" id="previewIcon">
+                            <i class="bi bi-file-earmark-text"></i>
+                          </div>
+                          <div class="overflow-hidden">
+                            <div class="fw-semibold text-dark tl-small text-truncate" id="previewFileName">document.pdf</div>
+                            <div class="tl-micro text-muted" id="previewFileSize">2.4 MB</div>
+                          </div>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-outline-danger" id="removeFileBtn" title="Remove file">
+                          <i class="bi bi-trash3"></i>
+                        </button>
+                      </div>
+                      <div id="fileValidationFeedback" class="tl-micro text-danger mt-2 d-none"></div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-3 border-top gap-2">
+                  <a href="investigation-details.html?id=TL-8429" class="btn btn-tl-secondary" id="cancelEvidenceBtn">
+                    Cancel
+                  </a>
+                  <button type="submit" class="btn btn-tl-primary d-flex align-items-center gap-2" id="btnSubmitEvidence">
+                    <span class="spinner-border spinner-border-sm d-none" id="submitSpinner" role="status" aria-hidden="true"></span>
+                    <span id="submitBtnText"><i class="bi bi-shield-plus me-1"></i> Save Evidence Record</span>
+                  </button>
+                </div>
+
+              </form>
+
+            </div>
+          </div>
+
+          <!-- RIGHT: Academic Credibility & Rubric Panel (4 Cols) -->
+          <div class="col-lg-4">
+            
+            <!-- Source Credibility Rubric Card -->
+            <div class="tl-card p-3 p-md-4 mb-3 border-start-primary">
+              <div class="d-flex align-items-center gap-2 mb-3">
+                <span class="tl-icon-box bg-primary-subtle text-primary">
+                  <i class="bi bi-patch-check-fill"></i>
+                </span>
+                <h3 class="tl-h3 mb-0">Credibility Rubric</h3>
+              </div>
+
+              <p class="tl-small text-secondary mb-3">
+                TruthLens evaluates source authority using standard academic and open journalistic verification criteria.
+              </p>
+
+              <div class="vstack gap-2 tl-micro">
+                <div class="p-2 rounded bg-light border">
+                  <span class="badge bg-success-subtle text-success me-1">5 / 5</span> 
+                  <strong class="text-dark">Very High:</strong> Peer-reviewed scientific journals (ACM, Nature, IEEE), national statistical bodies (BLS, Census), verified court filings.
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <span class="badge bg-info-subtle text-info me-1">4 / 5</span> 
+                  <strong class="text-dark">High:</strong> Major institutional news wires (Reuters, AP), accredited university press reports, official corporate 10-K SEC filings.
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <span class="badge bg-warning-subtle text-warning me-1">3 / 5</span> 
+                  <strong class="text-dark">Moderate:</strong> Commercial industry whitepapers, trade publications, named on-the-record specialist interviews.
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <span class="badge bg-secondary text-white me-1">2 / 5</span> 
+                  <strong class="text-dark">Low:</strong> Corporate keynote speeches, marketing blog posts, unverified think-tank op-eds with corporate funding.
+                </div>
+                <div class="p-2 rounded bg-light border">
+                  <span class="badge bg-danger-subtle text-danger me-1">1 / 5</span> 
+                  <strong class="text-dark">Very Low:</strong> Anonymous social media screenshots, unsourced Telegram channels, speculative algorithmic aggregators.
+                </div>
+              </div>
+            </div>
+
+            <!-- Classification Guidance -->
+            <div class="tl-card p-3 p-md-4 bg-light border">
+              <h4 class="tl-h4 mb-2">Classification Guidance</h4>
+              <ul class="list-unstyled tl-micro text-secondary mb-0 vstack gap-2">
+                <li><strong class="text-success"><i class="bi bi-shield-check me-1"></i>Supporting:</strong> Empirically validates the target proposition under test.</li>
+                <li><strong class="text-danger"><i class="bi bi-shield-x me-1"></i>Against:</strong> Presents falsifying datasets or directly contradicts the target proposition.</li>
+                <li><strong class="text-secondary"><i class="bi bi-dash-circle me-1"></i>Neutral:</strong> Provides vital terminology, legal definitions, or historical context.</li>
+                <li><strong class="text-warning"><i class="bi bi-question-circle me-1"></i>Needs Verification:</strong> Incomplete chain of custody or uncorroborated primary origin.</li>
+              </ul>
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
+      <!-- App Shell Footer -->
+      <footer class="tl-app-footer px-4 py-3 border-top bg-white d-flex flex-wrap justify-content-between align-items-center tl-micro text-muted">
+        <div>TruthLens Academic System &bull; Version 1.0</div>
+        <div>Evidence-Driven Case Verification Standard</div>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- Reusable Modal: Logout Confirmation -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-labelledby="logoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content border">
+        <div class="modal-header border-bottom pb-2">
+          <h5 class="modal-title tl-h3 fs-6" id="logoutModalLabel">Confirm Sign Out</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-3">
+          <p class="tl-small text-secondary mb-0">
+            Are you sure you want to end your active investigation session? Unsaved evidence records will be lost.
+          </p>
+        </div>
+        <div class="modal-footer border-top pt-2">
+          <button type="button" class="btn btn-sm btn-tl-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="login.html" class="btn btn-sm btn-tl-primary bg-danger border-danger">Sign Out</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap 5.3.3 Bundle with Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Firebase App, Cloud Firestore & Auth SDKs (Compat v10 for browser-native scripts) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
+  <!-- Firebase Configuration & DB Service Layer -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase-db.js"></script>
+
+  <!-- Core App Controller -->
+  <script src="js/main.js"></script>
+
+  <!-- Dedicated Evidence Controller Script -->
+  <script src="js/evidence.js"></script>
+</body>
+</html>
